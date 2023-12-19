@@ -2,7 +2,6 @@ from nba_api.stats.static import teams, players
 from nba_api.stats.endpoints import playernextngames, commonteamroster
 import json
 import jsonpickle
-from pathlib import Path
 import os
 
 class Team:
