@@ -62,23 +62,34 @@ def make_player(player):
 
     return made_player
 
-
+player_list = []
+skipped = []
 for player in active_players:
 
-    filename = 'players/{0}_{1}_{2}.json'.format(
+    player_name = '{0} {1} ({2})'.format(
         player['last_name'],
         player['first_name'],
         player['id'],
-    ).replace(' ', '_')
+    )
 
-    try:
-        made_player = make_player(player)
-        os.makedirs(os.path.dirname(filename), exist_ok=True)
-        json.dump(
-            jsonpickle.encode(made_player),
-            open(filename, 'w'),
-        )
-    except:
-        if os.path.isfile(filename):
-            os.remove(filename)
-        print('skipping {0}'.format(filename))
+    for attempt in range(0, 3):
+        try:
+            made_player = make_player(player)
+            player_list.append(made_player)
+            break
+        except:
+            if attempt == 2:
+                print('skipping {0}'.format(player_name))
+                skipped.append(player_name)
+            else:
+                print('retrying {0}...'.format(player_name))
+
+filename = 'players/all_players.json'
+
+os.makedirs(os.path.dirname(filename), exist_ok=True)
+
+f = open(filename, "w")
+f.write(jsonpickle.encode(player_list))
+f.close()
+
+print('Skipped players:\n{0}'.format(skipped))
