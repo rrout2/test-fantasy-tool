@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import PlayerTable from './components/PlayerTable';
 import {
+    Button,
     Drawer,
     FormControl,
     FormControlLabel,
@@ -9,12 +10,21 @@ import {
     RadioGroup,
 } from '@mui/material';
 
+enum DrawerSelection {
+    PlayerTable = 'PlayerTable',
+    TeamTable = 'TeamTable',
+}
+
 function App() {
     const [drawerOpen, setDrawerOpen] = useState(true);
-    const [drawerValue, setDrawerValue] = React.useState('PlayerTable');
+    const [drawerValue, setDrawerValue] = React.useState(
+        DrawerSelection.PlayerTable
+    );
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setDrawerValue((event.target as HTMLInputElement).value);
+        setDrawerValue(
+            (event.target as HTMLInputElement).value as DrawerSelection
+        );
     };
 
     function drawerMaybe() {
@@ -26,18 +36,18 @@ function App() {
             >
                 <FormControl>
                     <RadioGroup
-                        defaultValue="PlayerTable"
+                        defaultValue={DrawerSelection.PlayerTable}
                         onChange={handleChange}
                     >
                         <FormControlLabel
-                            value="PlayerTable"
+                            value={DrawerSelection.PlayerTable}
                             control={<Radio />}
                             label="Players"
                         />
                         <FormControlLabel
-                            value="other"
+                            value={DrawerSelection.TeamTable}
                             control={<Radio />}
-                            label="Other"
+                            label="Teams"
                         />
                     </RadioGroup>
                 </FormControl>
@@ -47,8 +57,10 @@ function App() {
 
     function parseDrawer() {
         switch (drawerValue) {
-            case 'PlayerTable':
+            case DrawerSelection.PlayerTable:
                 return <PlayerTable />;
+            case DrawerSelection.TeamTable:
+                return <>TODO</>;
             default:
                 return <>oopsies</>;
         }
@@ -56,7 +68,18 @@ function App() {
 
     return (
         <div className="App">
-            {drawerMaybe()} {parseDrawer()}
+            {drawerMaybe()}{' '}
+            {
+                <Button
+                    variant="text"
+                    onClick={() => {
+                        setDrawerOpen(!drawerOpen);
+                    }}
+                >
+                    Menu
+                </Button>
+            }
+            {parseDrawer()}
         </div>
     );
 }

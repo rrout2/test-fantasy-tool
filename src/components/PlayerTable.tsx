@@ -179,16 +179,16 @@ export default function PlayerTable() {
     }
 
     const columns: GridColDef[] = [
-        {field: 'name', headerName: 'Name', width: screenWidth / 4},
+        {field: 'name', headerName: 'Name', width: screenWidth * 0.25},
         {
             field: 'numMatchups',
             headerName: '# Remaining Games',
-            width: screenWidth / 4,
+            width: screenWidth * 0.25,
         },
         {
             field: 'remainingGamesThisWeek',
             headerName: '# Remaining Games this week',
-            width: screenWidth / 4,
+            width: screenWidth * 0.25,
         },
         {
             field: '',
@@ -196,7 +196,7 @@ export default function PlayerTable() {
                 return params.row.matchupsPerWeek.get(getWhichWeek(new Date()));
             },
             headerName: '# Games this Week',
-            width: screenWidth / 4,
+            width: screenWidth * 0.25,
         },
     ];
     return (
@@ -209,7 +209,6 @@ export default function PlayerTable() {
                 },
             }}
             className="playerTable"
-            checkboxSelection
         />
     );
 }
