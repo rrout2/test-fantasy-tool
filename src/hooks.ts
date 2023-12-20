@@ -15,3 +15,19 @@ export function useScreenWidth() {
     }, []);
     return screenWidth;
 }
+
+export function useScreenHeight() {
+    const [screenHeight, setScreenHeight] = useState(window.innerHeight);
+
+    useEffect(() => {
+        const updateDimension = () => {
+            setScreenHeight(window.innerHeight);
+        };
+        window.addEventListener('resize', updateDimension);
+
+        return () => {
+            window.removeEventListener('resize', updateDimension);
+        };
+    }, []);
+    return screenHeight;
+}

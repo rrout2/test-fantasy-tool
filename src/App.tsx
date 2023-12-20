@@ -16,7 +16,7 @@ enum DrawerSelection {
 }
 
 function App() {
-    const [drawerOpen, setDrawerOpen] = useState(true);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const [drawerValue, setDrawerValue] = React.useState(
         DrawerSelection.PlayerTable
     );
@@ -73,7 +73,7 @@ function App() {
                 <Button
                     variant="text"
                     onClick={() => {
-                        setDrawerOpen(!drawerOpen);
+                        setDrawerOpen(true);
                     }}
                 >
                     Menu

@@ -3,7 +3,7 @@ import React, {
     GridColDef,
     GridValueGetterParams,
 } from '@mui/x-data-grid';
-import {useScreenWidth} from './../hooks';
+import {useScreenHeight, useScreenWidth} from './../hooks';
 import {useEffect, useState} from 'react';
 import playersJson from '../data/all_players.json';
 
@@ -112,10 +112,16 @@ const weeks: FantasyWeek[] = [
     },
 ];
 
+const MOBILE_BREAKPOINT = 700;
+
 export default function PlayerTable() {
     const [playerList, setPlayerList] = useState<Player[]>([]);
     const [today] = useState(new Date());
-    const screenWidth = useScreenWidth() * 0.8;
+    let screenWidth = useScreenWidth();
+    if (screenWidth >= MOBILE_BREAKPOINT) {
+        screenWidth *= 0.8;
+    }
+    const screenHeight = useScreenHeight();
 
     useEffect(() => {
         setPlayerList(
@@ -205,7 +211,10 @@ export default function PlayerTable() {
             columns={columns}
             initialState={{
                 pagination: {
-                    paginationModel: {page: 0, pageSize: 15},
+                    paginationModel: {
+                        page: 0,
+                        pageSize: Math.round(screenHeight / 52) - 4,
+                    },
                 },
             }}
             className="playerTable"
