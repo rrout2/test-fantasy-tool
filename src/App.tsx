@@ -20,7 +20,7 @@ function App() {
                 open={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
             >
-                setting maybe??
+                settings maybe??
             </Drawer>
         );
     }
@@ -32,7 +32,7 @@ function App() {
             case Table.Team:
                 return <TeamTable />;
             default:
-                return <>oopsies</>;
+                throw new Error(`unrecognized toggle value: '${toggleValue}'`);
         }
     }
 
@@ -41,12 +41,18 @@ function App() {
             <ToggleButtonGroup
                 value={toggleValue}
                 exclusive
-                onChange={(_event: React.MouseEvent<HTMLElement>, value) => {
+                onChange={(_, value: Table | null) => {
+                    if (!value) return;
                     setToggleValue(value);
                 }}
+                sx={{padding: '5px'}}
             >
-                <ToggleButton value={Table.Team}>Teams</ToggleButton>
-                <ToggleButton value={Table.Player}>Players</ToggleButton>
+                <ToggleButton value={Table.Team} sx={{padding: '5px'}}>
+                    Teams
+                </ToggleButton>
+                <ToggleButton value={Table.Player} sx={{padding: '5px'}}>
+                    Players
+                </ToggleButton>
             </ToggleButtonGroup>
         );
     }
