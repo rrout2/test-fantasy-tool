@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/test-fantasy-tool/static/css/main.f855e6bc.css",
-    "main.js": "/test-fantasy-tool/static/js/main.7598d8ec.js",
+    "main.css": "/test-fantasy-tool/static/css/main.d0da83df.css",
+    "main.js": "/test-fantasy-tool/static/js/main.02db6377.js",
     "static/js/787.e6a5b8cf.chunk.js": "/test-fantasy-tool/static/js/787.e6a5b8cf.chunk.js",
     "index.html": "/test-fantasy-tool/index.html",
-    "main.f855e6bc.css.map": "/test-fantasy-tool/static/css/main.f855e6bc.css.map",
-    "main.7598d8ec.js.map": "/test-fantasy-tool/static/js/main.7598d8ec.js.map",
+    "main.d0da83df.css.map": "/test-fantasy-tool/static/css/main.d0da83df.css.map",
+    "main.02db6377.js.map": "/test-fantasy-tool/static/js/main.02db6377.js.map",
     "787.e6a5b8cf.chunk.js.map": "/test-fantasy-tool/static/js/787.e6a5b8cf.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f855e6bc.css",
-    "static/js/main.7598d8ec.js"
+    "static/css/main.d0da83df.css",
+    "static/js/main.02db6377.js"
   ]
 }
