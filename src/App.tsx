@@ -20,7 +20,7 @@ enum DrawerSelection {
 function App() {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [drawerValue, setDrawerValue] = React.useState(
-        DrawerSelection.PlayerTable
+        DrawerSelection.TeamTable
     );
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -43,14 +43,14 @@ function App() {
                             onChange={handleChange}
                         >
                             <FormControlLabel
-                                value={DrawerSelection.PlayerTable}
-                                control={<Radio />}
-                                label="Players"
-                            />
-                            <FormControlLabel
                                 value={DrawerSelection.TeamTable}
                                 control={<Radio />}
                                 label="Teams"
+                            />
+                            <FormControlLabel
+                                value={DrawerSelection.PlayerTable}
+                                control={<Radio />}
+                                label="Players"
                             />
                         </RadioGroup>
                     </FormControl>

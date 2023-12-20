@@ -21,6 +21,7 @@ type Player = {
     numMatchups: number;
     matchupsPerWeek: Map<FantasyWeek, number>;
     remainingGamesThisWeek: number;
+    teamName: string;
 };
 
 export type FantasyWeek = {
@@ -146,6 +147,7 @@ export default function PlayerTable() {
                     numMatchups: player.matchups.length,
                     matchupsPerWeek: matchupsPerWeek,
                     remainingGamesThisWeek: remainingGamesThisWeek,
+                    teamName: player.team_name,
                 };
             })
         );
@@ -185,16 +187,18 @@ export default function PlayerTable() {
     }
 
     const columns: GridColDef[] = [
-        {field: 'name', headerName: 'Name', width: screenWidth * 0.25},
+        {field: 'teamName', headerName: 'Team', width: screenWidth * 0.2},
+
+        {field: 'name', headerName: 'Name', width: screenWidth * 0.2},
         {
             field: 'numMatchups',
             headerName: '# Remaining Games',
-            width: screenWidth * 0.25,
+            width: screenWidth * 0.2,
         },
         {
             field: 'remainingGamesThisWeek',
             headerName: '# Remaining Games this week',
-            width: screenWidth * 0.25,
+            width: screenWidth * 0.2,
         },
         {
             field: '',
@@ -202,7 +206,7 @@ export default function PlayerTable() {
                 return params.row.matchupsPerWeek.get(getWhichWeek(new Date()));
             },
             headerName: '# Games this Week',
-            width: screenWidth * 0.25,
+            width: screenWidth * 0.2,
         },
     ];
     return (
