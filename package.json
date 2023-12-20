@@ -4,6 +4,12 @@
   "homepage": "https://rrout2.github.io/test-fantasy-tool",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.1",
+    "@emotion/styled": "^11.11.0",
+    "@mui/material": "^5.15.1",
+    "@mui/styled-engine": "^5.15.1",
+    "@mui/system": "^5.15.1",
+    "@mui/x-data-grid": "^6.18.5",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",

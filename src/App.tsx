@@ -1,28 +1,47 @@
-import React, {useEffect} from 'react';
-// import logo from './logo.svg';
+import React, {useEffect, useState} from 'react';
+import {DataGrid, GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
 import './App.css';
-import {readFileSync} from 'fs';
+import playersJson from './data/all_players.json';
+
+type team = {name: string; id: number};
+
+type matchup = {
+    opponent: team;
+    date: string;
+};
+
+type playerType = {
+    name: string;
+    id: number;
+    matchups: matchup[];
+};
+
 function App() {
+    const [playerList, setPlayerList] = useState<playerType[]>([]);
+
     useEffect(() => {
-        readFileSync('players/all_players.json', 'utf-8');
-    });
-    return (
-        <div className="App">
-            <header className="App-header">
-                <p>
-                    Edit <code>src/App.tsx</code> and save to reload.
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
-    );
+        setPlayerList(playersJson);
+    }, []);
+
+    function getTable() {
+        const rows = playerList;
+        const columns: GridColDef[] = [{field: 'name', headerName: 'Name'}];
+        return (
+            <DataGrid
+                rows={rows}
+                columns={columns}
+                initialState={{
+                    pagination: {
+                        paginationModel: {page: 0, pageSize: 5},
+                    },
+                }}
+                pageSizeOptions={[5, 10]}
+                checkboxSelection
+            />
+        );
+    }
+
+    return <div className="App">{getTable()}</div>;
 }
 
 export default App;

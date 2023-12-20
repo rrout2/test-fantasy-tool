@@ -84,7 +84,7 @@ for player in active_players:
             else:
                 print('retrying {0}...'.format(player_name))
 
-filename = 'players/all_players.json'
+filename = 'src/data/all_players.json'
 
 os.makedirs(os.path.dirname(filename), exist_ok=True)
 
