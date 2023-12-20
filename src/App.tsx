@@ -10,6 +10,7 @@ import {
     Radio,
     RadioGroup,
 } from '@mui/material';
+import TeamTable from './components/TeamTable';
 
 enum DrawerSelection {
     PlayerTable = 'PlayerTable',
@@ -38,7 +39,7 @@ function App() {
                 <Box sx={{padding: '20px'}}>
                     <FormControl>
                         <RadioGroup
-                            defaultValue={DrawerSelection.PlayerTable}
+                            defaultValue={drawerValue}
                             onChange={handleChange}
                         >
                             <FormControlLabel
@@ -63,7 +64,7 @@ function App() {
             case DrawerSelection.PlayerTable:
                 return <PlayerTable />;
             case DrawerSelection.TeamTable:
-                return <>TODO</>;
+                return <TeamTable />;
             default:
                 return <>oopsies</>;
         }

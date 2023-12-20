@@ -23,13 +23,13 @@ type Player = {
     remainingGamesThisWeek: number;
 };
 
-type FantasyWeek = {
+export type FantasyWeek = {
     weekNumber: number;
     startDate: Date;
     endDate: Date;
 };
 
-const weeks: FantasyWeek[] = [
+export const WEEKS: FantasyWeek[] = [
     {
         weekNumber: 9,
         startDate: new Date('2023-12-18T00:00:00'),
@@ -112,7 +112,7 @@ const weeks: FantasyWeek[] = [
     },
 ];
 
-const MOBILE_BREAKPOINT = 700;
+export const MOBILE_BREAKPOINT = 700;
 
 export default function PlayerTable() {
     const [playerList, setPlayerList] = useState<Player[]>([]);
@@ -177,7 +177,7 @@ export default function PlayerTable() {
         } else {
             d = date;
         }
-        return weeks.find(
+        return WEEKS.find(
             (w: FantasyWeek) =>
                 d.getTime() <= w.endDate.getTime() &&
                 d.getTime() >= w.startDate.getTime()
