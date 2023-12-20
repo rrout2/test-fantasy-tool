@@ -110,31 +110,29 @@ const weeks: FantasyWeek[] = [
 
 function App() {
     const [playerList, setPlayerList] = useState<Player[]>([]);
+    const [today] = useState(new Date());
 
     useEffect(() => {
         setPlayerList(
-            playersJson.map(p => {
+            playersJson.map(player => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
 
-                p.matchups.forEach((m: Matchup) => {
-                    const w = getWhichWeek(m.date);
-                    if (!w) {
+                player.matchups.forEach((m: Matchup) => {
+                    const week = getWhichWeek(m.date);
+                    if (!week) {
                         throw new Error(`can't find week for date '${m.date}'`);
                     }
-                    if (
-                        w === getCurrentWeek() &&
-                        new Date(m.date) >= new Date()
-                    ) {
+
+                    if (week === getCurrentWeek() && isAfterToday(m.date)) {
                         remainingGamesThisWeek += 1;
                     }
-                    const curr = matchupsPerWeek.get(w) ?? 0;
-                    matchupsPerWeek.set(w, curr + 1);
+                    incrementWeek(matchupsPerWeek, week);
                 });
 
                 return {
-                    ...p,
-                    numMatchups: p.matchups.length,
+                    ...player,
+                    numMatchups: player.matchups.length,
                     matchupsPerWeek: matchupsPerWeek,
                     remainingGamesThisWeek: remainingGamesThisWeek,
                 };
@@ -142,8 +140,11 @@ function App() {
         );
     }, []);
 
+    function incrementWeek(mpw: Map<FantasyWeek, number>, week: FantasyWeek) {
+        mpw.set(week, (mpw.get(week) ?? 0) + 1);
+    }
+
     function getCurrentWeek() {
-        const today = new Date();
         return getWhichWeek(today);
     }
 
@@ -159,6 +160,17 @@ function App() {
                 d.getTime() <= w.endDate.getTime() &&
                 d.getTime() >= w.startDate.getTime()
         );
+    }
+
+    function isAfterToday(date: Date | string) {
+        let d: Date;
+        if (!(date instanceof Date)) {
+            d = new Date(date);
+        } else {
+            d = date;
+        }
+
+        return d.getTime() >= today.getTime();
     }
 
     function getTable() {
