@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import './App.css';
 import PlayerTable from './components/PlayerTable';
 import {
+    Box,
     Button,
     Drawer,
     FormControl,
@@ -34,23 +35,25 @@ function App() {
                 open={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
             >
-                <FormControl>
-                    <RadioGroup
-                        defaultValue={DrawerSelection.PlayerTable}
-                        onChange={handleChange}
-                    >
-                        <FormControlLabel
-                            value={DrawerSelection.PlayerTable}
-                            control={<Radio />}
-                            label="Players"
-                        />
-                        <FormControlLabel
-                            value={DrawerSelection.TeamTable}
-                            control={<Radio />}
-                            label="Teams"
-                        />
-                    </RadioGroup>
-                </FormControl>
+                <Box sx={{padding: '20px'}}>
+                    <FormControl>
+                        <RadioGroup
+                            defaultValue={DrawerSelection.PlayerTable}
+                            onChange={handleChange}
+                        >
+                            <FormControlLabel
+                                value={DrawerSelection.PlayerTable}
+                                control={<Radio />}
+                                label="Players"
+                            />
+                            <FormControlLabel
+                                value={DrawerSelection.TeamTable}
+                                control={<Radio />}
+                                label="Teams"
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                </Box>
             </Drawer>
         );
     }
@@ -68,7 +71,6 @@ function App() {
 
     return (
         <div className="App">
-            {drawerMaybe()}{' '}
             {
                 <Button
                     variant="text"
@@ -79,6 +81,7 @@ function App() {
                     Menu
                 </Button>
             }
+            {drawerMaybe()}
             {parseDrawer()}
         </div>
     );
