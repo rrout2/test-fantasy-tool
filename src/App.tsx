@@ -1,77 +1,61 @@
 import React, {useState} from 'react';
 import './App.css';
 import PlayerTable from './components/PlayerTable';
-import {
-    Box,
-    Button,
-    Drawer,
-    FormControl,
-    FormControlLabel,
-    Radio,
-    RadioGroup,
-} from '@mui/material';
+import {Button, Drawer, ToggleButton, ToggleButtonGroup} from '@mui/material';
 import TeamTable from './components/TeamTable';
 
-enum DrawerSelection {
-    PlayerTable = 'PlayerTable',
-    TeamTable = 'TeamTable',
+enum Table {
+    Player = 'PlayerTable',
+    Team = 'TeamTable',
 }
 
 function App() {
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [drawerValue, setDrawerValue] = React.useState(
-        DrawerSelection.TeamTable
-    );
+    const [toggleValue, setToggleValue] = React.useState(Table.Team);
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setDrawerValue(
-            (event.target as HTMLInputElement).value as DrawerSelection
-        );
-    };
-
-    function drawerMaybe() {
+    function settingsMenu() {
         return (
             <Drawer
                 anchor={'left'}
                 open={drawerOpen}
                 onClose={() => setDrawerOpen(false)}
             >
-                <Box sx={{padding: '20px'}}>
-                    <FormControl>
-                        <RadioGroup
-                            defaultValue={drawerValue}
-                            onChange={handleChange}
-                        >
-                            <FormControlLabel
-                                value={DrawerSelection.TeamTable}
-                                control={<Radio />}
-                                label="Teams"
-                            />
-                            <FormControlLabel
-                                value={DrawerSelection.PlayerTable}
-                                control={<Radio />}
-                                label="Players"
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Box>
+                setting maybe??
             </Drawer>
         );
     }
 
-    function parseDrawer() {
-        switch (drawerValue) {
-            case DrawerSelection.PlayerTable:
+    function tableElement() {
+        switch (toggleValue) {
+            case Table.Player:
                 return <PlayerTable />;
-            case DrawerSelection.TeamTable:
+            case Table.Team:
                 return <TeamTable />;
             default:
                 return <>oopsies</>;
         }
     }
 
+    function toggleGroup() {
+        return (
+            <ToggleButtonGroup
+                value={toggleValue}
+                exclusive
+                onChange={(_event: React.MouseEvent<HTMLElement>, value) => {
+                    setToggleValue(value);
+                }}
+            >
+                <ToggleButton value={Table.Team}>Teams</ToggleButton>
+                <ToggleButton value={Table.Player}>Players</ToggleButton>
+            </ToggleButtonGroup>
+        );
+    }
+
     return (
         <div className="App">
+            {toggleGroup()}
+            {settingsMenu()}
+            {tableElement()}
             {
                 <Button
                     variant="text"
@@ -79,11 +63,9 @@ function App() {
                         setDrawerOpen(true);
                     }}
                 >
-                    Menu
+                    Settings
                 </Button>
             }
-            {drawerMaybe()}
-            {parseDrawer()}
         </div>
     );
 }
