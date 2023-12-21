@@ -1,21 +1,21 @@
-import React, {
-    DataGrid,
-    GridColDef,
-    GridValueGetterParams,
-} from '@mui/x-data-grid';
+import React, {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {
     useIsSmallScreen,
     useScreenHeight,
     useScreenWidth,
     useToday,
 } from './../hooks';
-import {useEffect, useState} from 'react';
+import {useContext, useEffect, useState} from 'react';
 import playersJson from '../data/all_players.json';
 import {FantasyWeek, getWhichWeek, incrementWeek} from '../utils/fantasyWeek';
 import {
     REMAINING_GAMES_THIS_WEEK_LABEL,
     TOTAL_GAMES_REMAINING_LABEL,
 } from '../consts/strings';
+import {
+    SelectedTeamsContext,
+    SelectedTeamsModel,
+} from '../contexts/SelectedTeamsContext';
 
 type Team = {name: string; id: number};
 
@@ -40,6 +40,8 @@ export default function PlayerTable() {
     const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
     const screenHeight = useScreenHeight();
+    const selectedTeamsModel: SelectedTeamsModel =
+        useContext(SelectedTeamsContext);
     useEffect(() => {
         setPlayerList(
             playersJson.map(player => {
@@ -68,6 +70,10 @@ export default function PlayerTable() {
             })
         );
     }, [today]);
+
+    useEffect(() => {
+        console.log(selectedTeamsModel);
+    }, [selectedTeamsModel]);
 
     function getCurrentWeek() {
         return getWhichWeek(today);

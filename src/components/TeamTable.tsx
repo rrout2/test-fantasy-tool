@@ -1,6 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useIsSmallScreen, useScreenWidth, useToday} from '../hooks';
-import {DataGrid, GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
+import {
+    DataGrid,
+    GridColDef,
+    GridRowSelectionModel,
+    GridValueGetterParams,
+} from '@mui/x-data-grid';
 import teamsJson from '../data/all_teams.json';
 import {
     incrementWeek,
@@ -13,11 +18,16 @@ import {
     REMAINING_GAMES_THIS_WEEK_LABEL,
     TOTAL_GAMES_REMAINING_LABEL,
 } from '../consts/strings';
+import {
+    SelectedTeamsContext,
+    SelectedTeamsModel,
+} from '../contexts/SelectedTeamsContext';
+
 type TeamMatchup = {
     opponentId: number;
     date: string;
 };
-type Team = {
+export type Team = {
     name: string;
     id: number;
     teamMatchups: TeamMatchup[];
@@ -29,6 +39,19 @@ export default function TeamTable() {
     const [teamList, setTeamList] = useState<Team[]>([]);
     const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
+
+    const selectedTeamsModel: SelectedTeamsModel =
+        useContext(SelectedTeamsContext);
+    const [rowSelectionModel, setRowSelectionModel] =
+        useState<GridRowSelectionModel>(
+            selectedTeamsModel.selectedRows.map(row => row.id)
+        );
+
+    useEffect(() => {
+        setRowSelectionModel(
+            selectedTeamsModel.selectedRows.map(row => row.id)
+        );
+    }, [selectedTeamsModel.selectedRows]);
 
     useEffect(() => {
         setTeamList(
@@ -100,7 +123,6 @@ export default function TeamTable() {
             headerName: TOTAL_GAMES_REMAINING_LABEL,
         },
     ];
-
     return (
         <DataGrid
             rows={teamList}
@@ -123,6 +145,15 @@ export default function TeamTable() {
             pageSizeOptions={[5, 10, 30]}
             className="playerTable"
             checkboxSelection
+            onRowSelectionModelChange={newRowSelectionModel => {
+                console.log(newRowSelectionModel);
+                const teams = newRowSelectionModel.map(teamId => {
+                    return teamList.find(team => team.id === teamId)!;
+                });
+                selectedTeamsModel.selectedRows = teams;
+                setRowSelectionModel(newRowSelectionModel);
+            }}
+            rowSelectionModel={rowSelectionModel}
         />
     );
 }

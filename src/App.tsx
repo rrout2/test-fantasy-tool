@@ -1,17 +1,18 @@
-import React, {useState} from 'react';
+import React, {Fragment, useContext, useState} from 'react';
 import './App.css';
 import PlayerTable from './components/PlayerTable';
-import {Button, Drawer, ToggleButton, ToggleButtonGroup} from '@mui/material';
+import {Button, Drawer, Tab, Tabs} from '@mui/material';
 import TeamTable from './components/TeamTable';
-
-enum Table {
-    Player = 'PlayerTable',
-    Team = 'TeamTable',
-}
+import {
+    SelectedTeamsContext,
+    SelectedTeamsModel,
+} from './contexts/SelectedTeamsContext';
 
 function App() {
     const [drawerOpen, setDrawerOpen] = useState(false);
-    const [toggleValue, setToggleValue] = React.useState(Table.Team);
+    const [tabValue, setTabValue] = useState(0);
+    const selectedTeamsModel: SelectedTeamsModel =
+        useContext(SelectedTeamsContext);
 
     function settingsMenu() {
         return (
@@ -26,52 +27,56 @@ function App() {
     }
 
     function tableElement() {
-        switch (toggleValue) {
-            case Table.Player:
-                return <PlayerTable />;
-            case Table.Team:
-                return <TeamTable />;
-            default:
-                throw new Error(`unrecognized toggle value: '${toggleValue}'`);
-        }
+        return (
+            // <Fragment>
+            //     {tabValue === 1 && <PlayerTable />}{' '}
+            //     {tabValue === 0 && <TeamTable />}
+            // </Fragment>
+            <Fragment>
+                <div hidden={tabValue !== 1} style={{height: 'fit-content'}}>
+                    {<PlayerTable />}
+                </div>
+                <div hidden={tabValue !== 0} style={{height: 'fit-content'}}>
+                    {<TeamTable />}
+                </div>
+            </Fragment>
+        );
     }
 
-    function toggleGroup() {
+    function tabGroup() {
         return (
-            <ToggleButtonGroup
-                value={toggleValue}
-                exclusive
-                onChange={(_, value: Table | null) => {
-                    if (!value) return;
-                    setToggleValue(value);
-                }}
-                sx={{padding: '5px'}}
-            >
-                <ToggleButton value={Table.Team} sx={{padding: '5px'}}>
-                    Teams
-                </ToggleButton>
-                <ToggleButton value={Table.Player} sx={{padding: '5px'}}>
-                    Players
-                </ToggleButton>
-            </ToggleButtonGroup>
+            <>
+                <Tabs
+                    value={tabValue}
+                    onChange={(_: React.SyntheticEvent, newValue: number) => {
+                        setTabValue(newValue);
+                    }}
+                    aria-label="basic tabs example"
+                >
+                    <Tab label="Teams" />
+                    <Tab label="Players" />
+                </Tabs>
+                {tableElement()}
+            </>
         );
     }
 
     return (
         <div className="App">
-            {toggleGroup()}
-            {settingsMenu()}
-            {tableElement()}
-            {
-                <Button
-                    variant="text"
-                    onClick={() => {
-                        setDrawerOpen(true);
-                    }}
-                >
-                    Settings
-                </Button>
-            }
+            <SelectedTeamsContext.Provider value={selectedTeamsModel}>
+                {tabGroup()}
+                {settingsMenu()}
+                {
+                    <Button
+                        variant="text"
+                        onClick={() => {
+                            setDrawerOpen(true);
+                        }}
+                    >
+                        Settings
+                    </Button>
+                }
+            </SelectedTeamsContext.Provider>
         </div>
     );
 }
