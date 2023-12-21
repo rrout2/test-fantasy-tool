@@ -41,3 +41,14 @@ export function useToday() {
     }, []);
     return today;
 }
+export const MOBILE_BREAKPOINT = 700;
+export function useIsSmallScreen() {
+    const screenWidth = useScreenWidth();
+    const [isSmallScreen, setIsSmallScreen] = useState(
+        screenWidth <= MOBILE_BREAKPOINT
+    );
+    useEffect(() => {
+        setIsSmallScreen(screenWidth <= MOBILE_BREAKPOINT);
+    }, [screenWidth]);
+    return isSmallScreen;
+}

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
-import {useScreenHeight, useScreenWidth, useToday} from '../hooks';
-import {FantasyWeek, MOBILE_BREAKPOINT, WEEKS} from './PlayerTable';
+import {useIsSmallScreen, useScreenWidth, useToday} from '../hooks';
+import {FantasyWeek, WEEKS} from './PlayerTable';
 import {DataGrid, GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
 import teamsJson from '../data/all_teams.json';
 
@@ -8,16 +8,21 @@ type TeamMatchup = {
     opponentId: number;
     date: string;
 };
-type Team = {name: string; id: number; teamMatchups: TeamMatchup[]};
+type Team = {
+    name: string;
+    id: number;
+    teamMatchups: TeamMatchup[];
+    abbr: string;
+};
 
 export default function TeamTable() {
     const today = useToday();
     const [teamList, setTeamList] = useState<Team[]>([]);
     let screenWidth = useScreenWidth();
-    if (screenWidth >= MOBILE_BREAKPOINT) {
+    const isSmallScreen = useIsSmallScreen();
+    if (!isSmallScreen) {
         screenWidth *= 0.8;
     }
-    const screenHeight = useScreenHeight();
 
     function incrementWeek(mpw: Map<FantasyWeek, number>, week: FantasyWeek) {
         mpw.set(week, (mpw.get(week) ?? 0) + 1);
@@ -40,12 +45,13 @@ export default function TeamTable() {
 
     useEffect(() => {
         setTeamList(
-            teamsJson.map(t => {
+            teamsJson.map(team => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
                 return {
-                    ...t,
-                    teamMatchups: t.team_matchups.map(tmu => {
+                    ...team,
+                    abbr: team.abbr,
+                    teamMatchups: team.team_matchups.map(tmu => {
                         const week = getWhichWeek(tmu.date);
                         if (!week) {
                             throw new Error(
@@ -69,7 +75,11 @@ export default function TeamTable() {
     }, [today]);
 
     const columns: GridColDef[] = [
-        {field: 'name', headerName: 'Name', width: screenWidth * 0.25},
+        {
+            field: isSmallScreen ? 'abbr' : 'name',
+            headerName: 'Name',
+            width: screenWidth * 0.25,
+        },
         {
             field: 'remainingGamesThisWeek',
             headerName: '# Remaining Games this week',
@@ -93,7 +103,7 @@ export default function TeamTable() {
                 pagination: {
                     paginationModel: {
                         page: 0,
-                        pageSize: Math.round(screenHeight / 52) - 4,
+                        pageSize: 30,
                     },
                 },
             }}

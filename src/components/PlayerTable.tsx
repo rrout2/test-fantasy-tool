@@ -3,7 +3,12 @@ import React, {
     GridColDef,
     GridValueGetterParams,
 } from '@mui/x-data-grid';
-import {useScreenHeight, useScreenWidth, useToday} from './../hooks';
+import {
+    useIsSmallScreen,
+    useScreenHeight,
+    useScreenWidth,
+    useToday,
+} from './../hooks';
 import {useEffect, useState} from 'react';
 import playersJson from '../data/all_players.json';
 
@@ -113,13 +118,12 @@ export const WEEKS: FantasyWeek[] = [
     },
 ];
 
-export const MOBILE_BREAKPOINT = 700;
-
 export default function PlayerTable() {
     const [playerList, setPlayerList] = useState<Player[]>([]);
     const today = useToday();
     let screenWidth = useScreenWidth();
-    if (screenWidth >= MOBILE_BREAKPOINT) {
+    const isSmallScreen = useIsSmallScreen();
+    if (!isSmallScreen) {
         screenWidth *= 0.8;
     }
     const screenHeight = useScreenHeight();

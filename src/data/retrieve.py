@@ -12,8 +12,10 @@ class TeamMatchup:
         return self.opponent_id == other.opponent_id and self.date == other.date
 
 class Team:
-    def __init__(self, name: str, id: str, team_matchups: list[TeamMatchup] = []):
+    def __init__(self, name: str, id: str, team_matchups: list[TeamMatchup] = [], abbr: str = None):
         self.name = name
+        if abbr:
+            self.abbr = abbr
         self.id = id
         self.team_matchups = team_matchups
     def __eq__(self, other):
@@ -44,12 +46,14 @@ team_id_from_player_id = {}
 team_name_from_player_id = {}
 matchups_from_team_id: dict[str, list[Matchup]] = {}
 name_from_team_id: dict[str, str] = {}
+abbr_from_team_id: dict[str, str] = {}
 
 print('retrieving rosters...')
 for team in api_teams:
     team_id = team['id']
     roster = commonteamroster.CommonTeamRoster(team_id=team_id).common_team_roster.get_data_frame()
     name_from_team_id[team_id] = team['full_name']
+    abbr_from_team_id[team_id] = team['abbreviation']
     for player in roster['PLAYER_ID']:
         team_id_from_player_id[player] = team_id
         team_name_from_player_id[player] = team['abbreviation']
@@ -122,7 +126,14 @@ for player in active_players:
             else:
                 print('retrying {0}...'.format(player_name))
 
-team_list = [Team(name_from_team_id[team_id], team_id, matchups_from_team_id[team_id]) for team_id in matchups_from_team_id]
+team_list = [
+    Team(
+        name_from_team_id[team_id],
+        team_id,
+        matchups_from_team_id[team_id],
+        abbr_from_team_id[team_id] if abbr_from_team_id[team_id] else None,
+    ) for team_id in matchups_from_team_id
+]
 print('writing to file...')
 write_to_file('src/data/all_players.json', player_list)
 write_to_file('src/data/all_teams.json', team_list)
