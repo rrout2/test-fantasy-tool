@@ -37,6 +37,7 @@ export type Team = {
 export default function TeamTable() {
     const today = useToday();
     const [teamList, setTeamList] = useState<Team[]>([]);
+    const [numVisibleColumns, setNumVisibleColumns] = useState<number>(4);
     const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
 
@@ -126,12 +127,12 @@ export default function TeamTable() {
     return (
         <DataGrid
             rows={teamList}
-            columns={columns.map(c => {
+            columns={columns.map(col => {
                 return {
-                    ...c,
+                    ...col,
                     width: isSmallScreen
-                        ? screenWidth / columns.length
-                        : (screenWidth / columns.length) * 0.8,
+                        ? (screenWidth / numVisibleColumns) * 0.875
+                        : (screenWidth / numVisibleColumns) * 0.8,
                 };
             })}
             initialState={{
@@ -154,6 +155,19 @@ export default function TeamTable() {
                 setRowSelectionModel(newRowSelectionModel);
             }}
             rowSelectionModel={rowSelectionModel}
+            onColumnVisibilityModelChange={model => {
+                setNumVisibleColumns(
+                    columns.reduce<number>(
+                        (previousValue: number, currentValue: GridColDef) => {
+                            if (model[currentValue.field] === undefined) {
+                                return previousValue + 1;
+                            }
+                            return previousValue;
+                        },
+                        0
+                    )
+                );
+            }}
         />
     );
 }

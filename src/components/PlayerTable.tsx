@@ -40,8 +40,7 @@ export default function PlayerTable() {
     const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
     const screenHeight = useScreenHeight();
-    const selectedTeamsModel: SelectedTeamsModel =
-        useContext(SelectedTeamsContext);
+
     useEffect(() => {
         setPlayerList(
             playersJson.map(player => {
@@ -70,10 +69,6 @@ export default function PlayerTable() {
             })
         );
     }, [today]);
-
-    useEffect(() => {
-        console.log(selectedTeamsModel);
-    }, [selectedTeamsModel]);
 
     function getCurrentWeek() {
         return getWhichWeek(today);
