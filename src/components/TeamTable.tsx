@@ -2,7 +2,12 @@ import React, {useEffect, useState} from 'react';
 import {useIsSmallScreen, useScreenWidth, useToday} from '../hooks';
 import {DataGrid, GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
 import teamsJson from '../data/all_teams.json';
-import {incrementWeek, getWhichWeek, FantasyWeek} from '../utils/fantasyWeek';
+import {
+    incrementWeek,
+    getWhichWeek,
+    FantasyWeek,
+    getNextWeek as getFollowingWeek,
+} from '../utils/fantasyWeek';
 
 type TeamMatchup = {
     opponentId: number;
@@ -44,6 +49,7 @@ export default function TeamTable() {
             teamsJson.map(team => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
+                let gamesNextWeek = 0;
                 return {
                     ...team,
                     abbr: team.abbr,
@@ -54,17 +60,19 @@ export default function TeamTable() {
                                 `can't find week for date '${tmu.date}'`
                             );
                         }
+                        const currentWeek = getCurrentWeek();
 
-                        if (
-                            week === getCurrentWeek() &&
-                            isAfterToday(tmu.date)
-                        ) {
+                        if (week === currentWeek && isAfterToday(tmu.date)) {
                             remainingGamesThisWeek += 1;
+                        }
+                        if (week === getFollowingWeek(currentWeek)) {
+                            gamesNextWeek += 1;
                         }
                         incrementWeek(matchupsPerWeek, week);
                         return {opponentId: tmu.opponent.id, date: tmu.date};
                     }),
                     remainingGamesThisWeek: remainingGamesThisWeek,
+                    gamesNextWeek: gamesNextWeek,
                 };
             })
         );
@@ -74,12 +82,17 @@ export default function TeamTable() {
         {
             field: isSmallScreen ? 'abbr' : 'name',
             headerName: 'Name',
-            width: screenWidth * 0.25,
+            width: screenWidth * 0.2,
         },
         {
             field: 'remainingGamesThisWeek',
             headerName: '# Remaining Games this week',
-            width: screenWidth * 0.25,
+            width: screenWidth * 0.2,
+        },
+        {
+            field: 'gamesNextWeek',
+            headerName: '# Games next week',
+            width: screenWidth * 0.2,
         },
         {
             field: 'teamMatchups',
@@ -87,7 +100,7 @@ export default function TeamTable() {
                 return params.value.length;
             },
             headerName: '# Games Remaining',
-            width: screenWidth * 0.25,
+            width: screenWidth * 0.2,
         },
     ];
 

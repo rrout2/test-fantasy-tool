@@ -42,7 +42,7 @@ export default function PlayerTable() {
 
     useEffect(() => {
         setPlayerList(
-            playersJson.map(player => {
+            (playersJson as any[]).map(player => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
 

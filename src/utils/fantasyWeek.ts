@@ -106,3 +106,8 @@ export function getWhichWeek(date: Date | string): FantasyWeek | undefined {
             d.getTime() >= w.startDate.getTime()
     );
 }
+
+export function getNextWeek(week?: FantasyWeek) {
+    if (week) return WEEKS.find(w => w.weekNumber === week.weekNumber + 1);
+    return undefined;
+}
