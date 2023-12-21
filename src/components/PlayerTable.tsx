@@ -12,6 +12,10 @@ import {
 import {useEffect, useState} from 'react';
 import playersJson from '../data/all_players.json';
 import {FantasyWeek, getWhichWeek, incrementWeek} from '../utils/fantasyWeek';
+import {
+    REMAINING_GAMES_THIS_WEEK_LABEL,
+    TOTAL_GAMES_REMAINING_LABEL,
+} from '../consts/strings';
 
 type Team = {name: string; id: number};
 
@@ -85,19 +89,12 @@ export default function PlayerTable() {
 
         {field: 'name', headerName: 'Name'},
         {
-            field: 'numMatchups',
-            headerName: '# Remaining Games',
-        },
-        {
             field: 'remainingGamesThisWeek',
-            headerName: '# Remaining Games this week',
+            headerName: REMAINING_GAMES_THIS_WEEK_LABEL,
         },
         {
-            field: '',
-            valueGetter: (params: GridValueGetterParams) => {
-                return params.row.matchupsPerWeek.get(getWhichWeek(new Date()));
-            },
-            headerName: '# Games this Week',
+            field: 'numMatchups',
+            headerName: TOTAL_GAMES_REMAINING_LABEL,
         },
     ];
     return (

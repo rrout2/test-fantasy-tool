@@ -8,7 +8,11 @@ import {
     FantasyWeek,
     getNextWeek as getFollowingWeek,
 } from '../utils/fantasyWeek';
-
+import {
+    GAMES_NEXT_WEEK_LABEL,
+    REMAINING_GAMES_THIS_WEEK_LABEL,
+    TOTAL_GAMES_REMAINING_LABEL,
+} from '../consts/strings';
 type TeamMatchup = {
     opponentId: number;
     date: string;
@@ -25,9 +29,6 @@ export default function TeamTable() {
     const [teamList, setTeamList] = useState<Team[]>([]);
     const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
-    // if (!isSmallScreen) {
-    //     screenWidth *= 0.8;
-    // }
 
     useEffect(() => {
         setTeamList(
@@ -85,18 +86,18 @@ export default function TeamTable() {
         },
         {
             field: 'remainingGamesThisWeek',
-            headerName: '# Remaining Games this week',
+            headerName: REMAINING_GAMES_THIS_WEEK_LABEL,
         },
         {
             field: 'gamesNextWeek',
-            headerName: '# Games next week',
+            headerName: GAMES_NEXT_WEEK_LABEL,
         },
         {
             field: 'teamMatchups',
             valueGetter: (params: GridValueGetterParams) => {
                 return params.value.length;
             },
-            headerName: '# Games Remaining',
+            headerName: TOTAL_GAMES_REMAINING_LABEL,
         },
     ];
 
@@ -119,7 +120,9 @@ export default function TeamTable() {
                     },
                 },
             }}
+            pageSizeOptions={[5, 10, 30]}
             className="playerTable"
+            checkboxSelection
         />
     );
 }
