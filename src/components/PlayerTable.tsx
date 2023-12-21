@@ -39,7 +39,6 @@ export default function PlayerTable() {
         screenWidth *= 0.8;
     }
     const screenHeight = useScreenHeight();
-
     useEffect(() => {
         setPlayerList(
             (playersJson as any[]).map(player => {
@@ -48,12 +47,6 @@ export default function PlayerTable() {
 
                 player.matchups.forEach((m: Matchup) => {
                     const week = getWhichWeek(m.date);
-                    if (
-                        player.name.includes('Adebayo') &&
-                        m.date.includes('DEC 2')
-                    ) {
-                        console.log('woot');
-                    }
                     if (!week) {
                         throw new Error(`can't find week for date '${m.date}'`);
                     }
