@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {useIsSmallScreen, useScreenWidth, useToday} from '../hooks';
-import {FantasyWeek, WEEKS} from './PlayerTable';
 import {DataGrid, GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
 import teamsJson from '../data/all_teams.json';
+import {incrementWeek, getWhichWeek, FantasyWeek} from '../utils/fantasyWeek';
 
 type TeamMatchup = {
     opponentId: number;
@@ -22,10 +22,6 @@ export default function TeamTable() {
     const isSmallScreen = useIsSmallScreen();
     if (!isSmallScreen) {
         screenWidth *= 0.8;
-    }
-
-    function incrementWeek(mpw: Map<FantasyWeek, number>, week: FantasyWeek) {
-        mpw.set(week, (mpw.get(week) ?? 0) + 1);
     }
 
     function getCurrentWeek() {
@@ -109,19 +105,5 @@ export default function TeamTable() {
             }}
             className="playerTable"
         />
-    );
-}
-
-function getWhichWeek(date: Date | string): FantasyWeek | undefined {
-    let d: Date;
-    if (!(date instanceof Date)) {
-        d = new Date(date);
-    } else {
-        d = date;
-    }
-    return WEEKS.find(
-        (w: FantasyWeek) =>
-            d.getTime() <= w.endDate.getTime() &&
-            d.getTime() >= w.startDate.getTime()
     );
 }
