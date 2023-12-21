@@ -23,26 +23,11 @@ type Team = {
 export default function TeamTable() {
     const today = useToday();
     const [teamList, setTeamList] = useState<Team[]>([]);
-    let screenWidth = useScreenWidth();
+    const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
-    if (!isSmallScreen) {
-        screenWidth *= 0.8;
-    }
-
-    function getCurrentWeek() {
-        return getWhichWeek(today);
-    }
-
-    function isAfterToday(date: Date | string) {
-        let d: Date;
-        if (!(date instanceof Date)) {
-            d = new Date(date);
-        } else {
-            d = date;
-        }
-
-        return d.getTime() >= today.getTime();
-    }
+    // if (!isSmallScreen) {
+    //     screenWidth *= 0.8;
+    // }
 
     useEffect(() => {
         setTeamList(
@@ -78,21 +63,33 @@ export default function TeamTable() {
         );
     }, [today]);
 
+    function getCurrentWeek() {
+        return getWhichWeek(today);
+    }
+
+    function isAfterToday(date: Date | string) {
+        let d: Date;
+        if (!(date instanceof Date)) {
+            d = new Date(date);
+        } else {
+            d = date;
+        }
+
+        return d.getTime() >= today.getTime();
+    }
+
     const columns: GridColDef[] = [
         {
             field: isSmallScreen ? 'abbr' : 'name',
             headerName: 'Name',
-            width: screenWidth * 0.2,
         },
         {
             field: 'remainingGamesThisWeek',
             headerName: '# Remaining Games this week',
-            width: screenWidth * 0.2,
         },
         {
             field: 'gamesNextWeek',
             headerName: '# Games next week',
-            width: screenWidth * 0.2,
         },
         {
             field: 'teamMatchups',
@@ -100,14 +97,20 @@ export default function TeamTable() {
                 return params.value.length;
             },
             headerName: '# Games Remaining',
-            width: screenWidth * 0.2,
         },
     ];
 
     return (
         <DataGrid
             rows={teamList}
-            columns={columns}
+            columns={columns.map(c => {
+                return {
+                    ...c,
+                    width: isSmallScreen
+                        ? screenWidth / columns.length
+                        : (screenWidth / columns.length) * 0.8,
+                };
+            })}
             initialState={{
                 pagination: {
                     paginationModel: {

@@ -33,15 +33,12 @@ type Player = {
 export default function PlayerTable() {
     const [playerList, setPlayerList] = useState<Player[]>([]);
     const today = useToday();
-    let screenWidth = useScreenWidth();
+    const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
-    if (!isSmallScreen) {
-        screenWidth *= 0.8;
-    }
     const screenHeight = useScreenHeight();
     useEffect(() => {
         setPlayerList(
-            (playersJson as any[]).map(player => {
+            playersJson.map(player => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
 
@@ -84,18 +81,16 @@ export default function PlayerTable() {
     }
 
     const columns: GridColDef[] = [
-        {field: 'teamName', headerName: 'Team', width: screenWidth * 0.2},
+        {field: 'teamName', headerName: 'Team'},
 
-        {field: 'name', headerName: 'Name', width: screenWidth * 0.2},
+        {field: 'name', headerName: 'Name'},
         {
             field: 'numMatchups',
             headerName: '# Remaining Games',
-            width: screenWidth * 0.2,
         },
         {
             field: 'remainingGamesThisWeek',
             headerName: '# Remaining Games this week',
-            width: screenWidth * 0.2,
         },
         {
             field: '',
@@ -103,13 +98,19 @@ export default function PlayerTable() {
                 return params.row.matchupsPerWeek.get(getWhichWeek(new Date()));
             },
             headerName: '# Games this Week',
-            width: screenWidth * 0.2,
         },
     ];
     return (
         <DataGrid
             rows={playerList}
-            columns={columns}
+            columns={columns.map(c => {
+                return {
+                    ...c,
+                    width: isSmallScreen
+                        ? screenWidth / columns.length
+                        : (screenWidth / columns.length) * 0.8,
+                };
+            })}
             initialState={{
                 pagination: {
                     paginationModel: {
