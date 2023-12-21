@@ -3,7 +3,7 @@ import React, {
     GridColDef,
     GridValueGetterParams,
 } from '@mui/x-data-grid';
-import {useScreenHeight, useScreenWidth} from './../hooks';
+import {useScreenHeight, useScreenWidth, useToday} from './../hooks';
 import {useEffect, useState} from 'react';
 import playersJson from '../data/all_players.json';
 
@@ -117,7 +117,7 @@ export const MOBILE_BREAKPOINT = 700;
 
 export default function PlayerTable() {
     const [playerList, setPlayerList] = useState<Player[]>([]);
-    const [today] = useState(new Date());
+    const today = useToday();
     let screenWidth = useScreenWidth();
     if (screenWidth >= MOBILE_BREAKPOINT) {
         screenWidth *= 0.8;
@@ -132,6 +132,12 @@ export default function PlayerTable() {
 
                 player.matchups.forEach((m: Matchup) => {
                     const week = getWhichWeek(m.date);
+                    if (
+                        player.name.includes('Adebayo') &&
+                        m.date.includes('DEC 2')
+                    ) {
+                        console.log('woot');
+                    }
                     if (!week) {
                         throw new Error(`can't find week for date '${m.date}'`);
                     }
@@ -151,7 +157,7 @@ export default function PlayerTable() {
                 };
             })
         );
-    }, []);
+    }, [today]);
 
     function incrementWeek(mpw: Map<FantasyWeek, number>, week: FantasyWeek) {
         mpw.set(week, (mpw.get(week) ?? 0) + 1);

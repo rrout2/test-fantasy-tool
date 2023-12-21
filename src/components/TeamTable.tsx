@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useScreenHeight, useScreenWidth} from '../hooks';
+import {useScreenHeight, useScreenWidth, useToday} from '../hooks';
 import {FantasyWeek, MOBILE_BREAKPOINT, WEEKS} from './PlayerTable';
 import {DataGrid, GridColDef, GridValueGetterParams} from '@mui/x-data-grid';
 import teamsJson from '../data/all_teams.json';
@@ -11,7 +11,7 @@ type TeamMatchup = {
 type Team = {name: string; id: number; teamMatchups: TeamMatchup[]};
 
 export default function TeamTable() {
-    const [today] = useState(new Date());
+    const today = useToday();
     const [teamList, setTeamList] = useState<Team[]>([]);
     let screenWidth = useScreenWidth();
     if (screenWidth >= MOBILE_BREAKPOINT) {
@@ -39,23 +39,13 @@ export default function TeamTable() {
     }
 
     useEffect(() => {
-        today.setHours(0, 0, 0, 0);
         setTeamList(
             teamsJson.map(t => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
-                if (t.name.includes('ork')) {
-                    console.log('yeet!');
-                }
                 return {
                     ...t,
                     teamMatchups: t.team_matchups.map(tmu => {
-                        if (
-                            t.name.includes('ork') &&
-                            tmu.date.includes('DEC 20')
-                        ) {
-                            console.log('yeeters!');
-                        }
                         const week = getWhichWeek(tmu.date);
                         if (!week) {
                             throw new Error(
@@ -76,7 +66,7 @@ export default function TeamTable() {
                 };
             })
         );
-    }, []);
+    }, [today]);
 
     const columns: GridColDef[] = [
         {field: 'name', headerName: 'Name', width: screenWidth * 0.25},

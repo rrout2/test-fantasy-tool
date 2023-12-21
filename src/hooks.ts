@@ -31,3 +31,13 @@ export function useScreenHeight() {
     }, []);
     return screenHeight;
 }
+
+export function useToday() {
+    const [today, setToday] = useState<Date>(new Date());
+    useEffect(() => {
+        const d = new Date();
+        d.setHours(0, 0, 0, 0);
+        setToday(d);
+    }, []);
+    return today;
+}
