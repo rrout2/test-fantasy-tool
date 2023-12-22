@@ -1,5 +1,5 @@
 from nba_api.stats.static import teams, players
-from nba_api.stats.endpoints import playernextngames, commonteamroster
+from nba_api.stats.endpoints import playernextngames, commonteamroster, playerfantasyprofilebargraph
 import json
 import jsonpickle
 import os
@@ -29,12 +29,15 @@ class Matchup:
         return self.opponent == other.opponent and self.date == other.date
 
 class Player:
-    def __init__(self, name: str, id: str, team_id: str, team_name: str, matchups: list[Matchup]):
+    def __init__(self, name: str, id: str, team_id: str, team_name: str, matchups: list[Matchup], season_avg_fpts: float, last_five_avg_fpts: float = 0):
         self.name = name
         self.id = id
         self.team_id = team_id
         self.team_name = team_name
         self.matchups = matchups
+        self.season_avg_fpts = season_avg_fpts
+        self.last_five_avg_fpts = last_five_avg_fpts
+
     def __eq__(self, other):
         return self.id == other.id
 
@@ -61,6 +64,9 @@ for team in api_teams:
 def make_player(player):
     player_id = player['id']
 
+    fantasy_data = playerfantasyprofilebargraph.PlayerFantasyProfileBarGraph(player_id, '2023-24')
+    season_avg_fpts = float(fantasy_data.season_avg.get_data_frame()['NBA_FANTASY_PTS'][0])
+    last_five_avg_fpts = float(fantasy_data.last_five_games_avg.get_data_frame()['NBA_FANTASY_PTS'][0])
     next_n_games = playernextngames.PlayerNextNGames(
         season_all='2023-24',
         player_id=player_id,
@@ -93,6 +99,8 @@ def make_player(player):
         team_id_from_player_id[player_id],
         team_name_from_player_id[player_id],
         matchups,
+        season_avg_fpts,
+        last_five_avg_fpts,
     )
 
     return made_player

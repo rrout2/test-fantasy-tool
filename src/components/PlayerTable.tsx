@@ -9,7 +9,9 @@ import {useContext, useEffect, useState} from 'react';
 import playersJson from '../data/all_players.json';
 import {FantasyWeek, getWhichWeek, incrementWeek} from '../utils/fantasyWeek';
 import {
+    LAST_FIVE_AVG_FPTS_LABEL,
     REMAINING_GAMES_THIS_WEEK_LABEL,
+    SEASON_AVG_FPTS_LABEL,
     TOTAL_GAMES_REMAINING_LABEL,
 } from '../consts/strings';
 import {
@@ -32,6 +34,8 @@ type Player = {
     matchupsPerWeek: Map<FantasyWeek, number>;
     remainingGamesThisWeek: number;
     teamName: string;
+    seasonAvgFpts: number;
+    lastFiveAvgFpts: number;
 };
 
 export default function PlayerTable() {
@@ -80,6 +84,8 @@ export default function PlayerTable() {
                     matchupsPerWeek: matchupsPerWeek,
                     remainingGamesThisWeek: remainingGamesThisWeek,
                     teamName: player.team_name,
+                    seasonAvgFpts: player.season_avg_fpts,
+                    lastFiveAvgFpts: player.last_five_avg_fpts,
                 };
             })
         );
@@ -115,6 +121,14 @@ export default function PlayerTable() {
         {
             field: 'numMatchups',
             headerName: TOTAL_GAMES_REMAINING_LABEL,
+        },
+        {
+            field: 'seasonAvgFpts',
+            headerName: SEASON_AVG_FPTS_LABEL,
+        },
+        {
+            field: 'lastFiveAvgFpts',
+            headerName: LAST_FIVE_AVG_FPTS_LABEL,
         },
     ];
     return (
