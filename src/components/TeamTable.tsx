@@ -22,6 +22,7 @@ import {
     SelectedTeamsContext,
     SelectedTeamsModel,
 } from '../contexts/SelectedTeamsContext';
+import {CircularProgress} from '@mui/material';
 
 type TeamMatchup = {
     opponentId: number;
@@ -124,49 +125,57 @@ export default function TeamTable() {
             headerName: TOTAL_GAMES_REMAINING_LABEL,
         },
     ];
+
     return (
-        <DataGrid
-            rows={teamList}
-            columns={columns.map(col => {
-                return {
-                    ...col,
-                    width: isSmallScreen
-                        ? (screenWidth / numVisibleColumns) * 0.875
-                        : (screenWidth / numVisibleColumns) * 0.8,
-                };
-            })}
-            initialState={{
-                pagination: {
-                    paginationModel: {
-                        page: 0,
-                        pageSize: 30,
-                    },
-                },
-            }}
-            pageSizeOptions={[5, 10, 30]}
-            className="playerTable"
-            checkboxSelection
-            onRowSelectionModelChange={newRowSelectionModel => {
-                const teams = newRowSelectionModel.map(teamId => {
-                    return teamList.find(team => team.id === teamId)!;
-                });
-                selectedTeamsModel.selectedRows = teams;
-                setRowSelectionModel(newRowSelectionModel);
-            }}
-            rowSelectionModel={rowSelectionModel}
-            onColumnVisibilityModelChange={model => {
-                setNumVisibleColumns(
-                    columns.reduce<number>(
-                        (previousValue: number, currentValue: GridColDef) => {
-                            if (model[currentValue.field] === undefined) {
-                                return previousValue + 1;
-                            }
-                            return previousValue;
+        teamList.length > 0 && (
+            <DataGrid
+                disableVirtualization
+                autoHeight
+                rows={teamList}
+                columns={columns.map(col => {
+                    return {
+                        ...col,
+                        width: isSmallScreen
+                            ? (screenWidth / numVisibleColumns) * 0.875
+                            : (screenWidth / numVisibleColumns) * 0.8,
+                    };
+                })}
+                initialState={{
+                    pagination: {
+                        paginationModel: {
+                            page: 0,
+                            pageSize: 30,
                         },
-                        0
-                    )
-                );
-            }}
-        />
+                    },
+                }}
+                pageSizeOptions={[5, 10, 30]}
+                className="playerTable"
+                checkboxSelection
+                onRowSelectionModelChange={newRowSelectionModel => {
+                    const teams = newRowSelectionModel.map(teamId => {
+                        return teamList.find(team => team.id === teamId)!;
+                    });
+                    selectedTeamsModel.selectedRows = teams;
+                    setRowSelectionModel(newRowSelectionModel);
+                }}
+                rowSelectionModel={rowSelectionModel}
+                onColumnVisibilityModelChange={model => {
+                    setNumVisibleColumns(
+                        columns.reduce<number>(
+                            (
+                                previousValue: number,
+                                currentValue: GridColDef
+                            ) => {
+                                if (model[currentValue.field] === undefined) {
+                                    return previousValue + 1;
+                                }
+                                return previousValue;
+                            },
+                            0
+                        )
+                    );
+                }}
+            />
+        )
     );
 }

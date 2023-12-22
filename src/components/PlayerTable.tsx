@@ -133,6 +133,8 @@ export default function PlayerTable() {
     ];
     return (
         <DataGrid
+            disableVirtualization
+            autoHeight
             rows={playerList}
             columns={columns.map(c => {
                 return {
