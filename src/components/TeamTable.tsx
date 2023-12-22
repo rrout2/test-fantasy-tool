@@ -23,6 +23,7 @@ import {
     SelectedTeamsModel,
 } from '../contexts/SelectedTeamsContext';
 import {numericalOperators} from '../utils/gridOperators';
+import {Tooltip} from '@mui/material';
 
 type TeamMatchup = {
     opponentId: number;
@@ -33,6 +34,8 @@ export type Team = {
     id: number;
     teamMatchups: TeamMatchup[];
     abbr: string;
+    thisWeekDates: string[];
+    nextWeekDates: string[];
 };
 
 export default function TeamTable() {
@@ -60,7 +63,10 @@ export default function TeamTable() {
             teamsJson.map(team => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
+                const thisWeekDates: string[] = [];
                 let gamesNextWeek = 0;
+                const nextWeekDates: string[] = [];
+
                 return {
                     ...team,
                     abbr: team.abbr,
@@ -75,19 +81,23 @@ export default function TeamTable() {
 
                         if (week === currentWeek && isAfterToday(tmu.date)) {
                             remainingGamesThisWeek += 1;
+                            thisWeekDates.push(tmu.date);
                         }
                         if (week === getFollowingWeek(currentWeek)) {
                             gamesNextWeek += 1;
+                            nextWeekDates.push(tmu.date);
                         }
                         incrementWeek(matchupsPerWeek, week);
                         return {opponentId: tmu.opponent.id, date: tmu.date};
                     }),
                     remainingGamesThisWeek: remainingGamesThisWeek,
                     gamesNextWeek: gamesNextWeek,
+                    thisWeekDates: thisWeekDates.sort(),
+                    nextWeekDates: nextWeekDates.sort(),
                 };
             })
         );
-    }, [today]);
+    }, [today, teamsJson]);
 
     function getCurrentWeek() {
         return getWhichWeek(today);
@@ -113,11 +123,29 @@ export default function TeamTable() {
             field: 'remainingGamesThisWeek',
             headerName: REMAINING_GAMES_THIS_WEEK_LABEL,
             filterOperators: numericalOperators,
+            renderCell: params => {
+                return (
+                    <Tooltip title={params.row.thisWeekDates.join(', ')}>
+                        <div style={{width: '100%', textAlign: 'left'}}>
+                            {params.value}
+                        </div>
+                    </Tooltip>
+                );
+            },
         },
         {
             field: 'gamesNextWeek',
             headerName: GAMES_NEXT_WEEK_LABEL,
             filterOperators: numericalOperators,
+            renderCell: params => {
+                return (
+                    <Tooltip title={params.row.nextWeekDates.join(', ')}>
+                        <div style={{width: '100%', textAlign: 'left'}}>
+                            {params.value}
+                        </div>
+                    </Tooltip>
+                );
+            },
         },
         {
             field: 'teamMatchups',
@@ -152,7 +180,6 @@ export default function TeamTable() {
                     },
                 }}
                 pageSizeOptions={[5, 10, 30]}
-                className="playerTable"
                 checkboxSelection
                 onRowSelectionModelChange={newRowSelectionModel => {
                     const teams = newRowSelectionModel.map(teamId => {
@@ -169,7 +196,7 @@ export default function TeamTable() {
                                 previousValue: number,
                                 currentValue: GridColDef
                             ) => {
-                                if (model[currentValue.field] === undefined) {
+                                if (!model[currentValue.field]) {
                                     return previousValue + 1;
                                 }
                                 return previousValue;

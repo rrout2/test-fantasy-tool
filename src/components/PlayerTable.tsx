@@ -26,6 +26,15 @@ type Matchup = {
     date: string;
 };
 
+type PyPlayer = {
+    matchups: Matchup[];
+    team_name: string;
+    name: string;
+    id: number;
+    season_avg_fpts: number;
+    last_five_avg_fpts: number;
+};
+
 type Player = {
     name: string;
     id: number;
@@ -47,6 +56,7 @@ export default function PlayerTable() {
     const [filter, setFilter] = useState<GridFilterModel>({items: []});
     const selectedTeamsModel: SelectedTeamsModel =
         useContext(SelectedTeamsContext);
+
     useEffect(() => {
         setFilter({
             items: [
@@ -60,9 +70,10 @@ export default function PlayerTable() {
             ],
         });
     }, [selectedTeamsModel.selectedRows.length]);
+
     useEffect(() => {
         setPlayerList(
-            playersJson.map(player => {
+            (playersJson as PyPlayer[]).map(player => {
                 const matchupsPerWeek = new Map<FantasyWeek, number>();
                 let remainingGamesThisWeek = 0;
 
