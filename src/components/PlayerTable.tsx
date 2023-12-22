@@ -1,4 +1,4 @@
-import React, {DataGrid, GridColDef} from '@mui/x-data-grid';
+import React, {DataGrid, GridColDef, GridFilterModel} from '@mui/x-data-grid';
 import {
     useIsSmallScreen,
     useScreenHeight,
@@ -16,7 +16,7 @@ import {
     SelectedTeamsContext,
     SelectedTeamsModel,
 } from '../contexts/SelectedTeamsContext';
-
+import {isOneOfOperator} from '../utils/gridOperators';
 type Team = {name: string; id: number};
 
 type Matchup = {
@@ -40,7 +40,22 @@ export default function PlayerTable() {
     const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
     const screenHeight = useScreenHeight();
-
+    const [filter, setFilter] = useState<GridFilterModel>({items: []});
+    const selectedTeamsModel: SelectedTeamsModel =
+        useContext(SelectedTeamsContext);
+    useEffect(() => {
+        setFilter({
+            items: [
+                {
+                    field: 'teamName',
+                    value: selectedTeamsModel.selectedRows.map(
+                        team => team.abbr
+                    ),
+                    operator: 'isOneOf',
+                },
+            ],
+        });
+    }, [selectedTeamsModel.selectedRows.length]);
     useEffect(() => {
         setPlayerList(
             playersJson.map(player => {
@@ -86,7 +101,11 @@ export default function PlayerTable() {
     }
 
     const columns: GridColDef[] = [
-        {field: 'teamName', headerName: 'Team'},
+        {
+            field: 'teamName',
+            headerName: 'Team',
+            filterOperators: [isOneOfOperator],
+        },
 
         {field: 'name', headerName: 'Name'},
         {
@@ -117,6 +136,11 @@ export default function PlayerTable() {
                     },
                 },
             }}
+            onFilterModelChange={newFilterModel => {
+                console.log(newFilterModel);
+                setFilter(newFilterModel);
+            }}
+            filterModel={filter}
             className="playerTable"
         />
     );

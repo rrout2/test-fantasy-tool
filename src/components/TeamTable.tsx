@@ -147,7 +147,6 @@ export default function TeamTable() {
             className="playerTable"
             checkboxSelection
             onRowSelectionModelChange={newRowSelectionModel => {
-                console.log(newRowSelectionModel);
                 const teams = newRowSelectionModel.map(teamId => {
                     return teamList.find(team => team.id === teamId)!;
                 });
