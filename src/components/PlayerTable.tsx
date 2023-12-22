@@ -18,7 +18,7 @@ import {
     SelectedTeamsContext,
     SelectedTeamsModel,
 } from '../contexts/SelectedTeamsContext';
-import {isOneOfOperator} from '../utils/gridOperators';
+import {isOneOfOperator, numericalOperators} from '../utils/gridOperators';
 type Team = {name: string; id: number};
 
 type Matchup = {
@@ -89,7 +89,7 @@ export default function PlayerTable() {
                 };
             })
         );
-    }, [today]);
+    }, [today, playersJson]);
 
     function getCurrentWeek() {
         return getWhichWeek(today);
@@ -125,10 +125,12 @@ export default function PlayerTable() {
         {
             field: 'seasonAvgFpts',
             headerName: SEASON_AVG_FPTS_LABEL,
+            filterOperators: numericalOperators,
         },
         {
             field: 'lastFiveAvgFpts',
             headerName: LAST_FIVE_AVG_FPTS_LABEL,
+            filterOperators: numericalOperators,
         },
     ];
     return (

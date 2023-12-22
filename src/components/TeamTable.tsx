@@ -22,7 +22,7 @@ import {
     SelectedTeamsContext,
     SelectedTeamsModel,
 } from '../contexts/SelectedTeamsContext';
-import {CircularProgress} from '@mui/material';
+import {numericalOperators} from '../utils/gridOperators';
 
 type TeamMatchup = {
     opponentId: number;
@@ -112,10 +112,12 @@ export default function TeamTable() {
         {
             field: 'remainingGamesThisWeek',
             headerName: REMAINING_GAMES_THIS_WEEK_LABEL,
+            filterOperators: numericalOperators,
         },
         {
             field: 'gamesNextWeek',
             headerName: GAMES_NEXT_WEEK_LABEL,
+            filterOperators: numericalOperators,
         },
         {
             field: 'teamMatchups',
@@ -123,6 +125,7 @@ export default function TeamTable() {
                 return params.value.length;
             },
             headerName: TOTAL_GAMES_REMAINING_LABEL,
+            filterOperators: numericalOperators,
         },
     ];
 
