@@ -189,20 +189,12 @@ export default function TeamTable() {
                     setRowSelectionModel(newRowSelectionModel);
                 }}
                 rowSelectionModel={rowSelectionModel}
-                onColumnVisibilityModelChange={model => {
+                onColumnVisibilityModelChange={vizModel => {
                     setNumVisibleColumns(
-                        columns.reduce<number>(
-                            (
-                                previousValue: number,
-                                currentValue: GridColDef
-                            ) => {
-                                if (!model[currentValue.field]) {
-                                    return previousValue + 1;
-                                }
-                                return previousValue;
-                            },
-                            0
-                        )
+                        columns.length -
+                            Object.keys(vizModel).filter(
+                                column => !vizModel[column]
+                            ).length
                     );
                 }}
             />

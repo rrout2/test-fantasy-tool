@@ -166,7 +166,6 @@ export default function PlayerTable() {
                 },
             }}
             onFilterModelChange={newFilterModel => {
-                console.log(newFilterModel);
                 setFilter(newFilterModel);
             }}
             filterModel={filter}
