@@ -160,6 +160,20 @@ export default function TeamTable() {
     return (
         teamList.length > 0 && (
             <DataGrid
+                sx={{
+                    '& .MuiDataGrid-columnHeaderTitle': {
+                        whiteSpace: 'normal',
+                        lineHeight: 'normal',
+                    },
+                    '& .MuiDataGrid-columnHeader': {
+                        // Forced to use important since overriding inline styles
+                        height: 'unset !important',
+                    },
+                    '& .MuiDataGrid-columnHeaders': {
+                        // Forced to use important since overriding inline styles
+                        maxHeight: '168px !important',
+                    },
+                }}
                 disableVirtualization
                 autoHeight
                 rows={teamList}

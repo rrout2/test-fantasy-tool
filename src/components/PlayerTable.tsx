@@ -146,6 +146,20 @@ export default function PlayerTable() {
     ];
     return (
         <DataGrid
+            sx={{
+                '& .MuiDataGrid-columnHeaderTitle': {
+                    whiteSpace: 'normal',
+                    lineHeight: 'normal',
+                },
+                '& .MuiDataGrid-columnHeader': {
+                    // Forced to use important since overriding inline styles
+                    height: 'unset !important',
+                },
+                '& .MuiDataGrid-columnHeaders': {
+                    // Forced to use important since overriding inline styles
+                    maxHeight: '168px !important',
+                },
+            }}
             disableVirtualization
             autoHeight
             rows={playerList}
