@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {Dispatch, SetStateAction, useEffect, useState} from 'react';
 
 export function useScreenWidth() {
     const [screenWidth, setScreenWidth] = useState(window.innerWidth);
@@ -32,14 +32,14 @@ export function useScreenHeight() {
     return screenHeight;
 }
 
-export function useToday() {
+export function useToday(): [Date, Dispatch<SetStateAction<Date>>] {
     const [today, setToday] = useState<Date>(new Date());
     useEffect(() => {
         const d = new Date();
         d.setHours(0, 0, 0, 0);
         setToday(d);
     }, []);
-    return today;
+    return [today, setToday];
 }
 export const MOBILE_BREAKPOINT = 700;
 export function useIsSmallScreen() {

@@ -39,7 +39,7 @@ export type Team = {
 };
 
 export default function TeamTable() {
-    const today = useToday();
+    const [today] = useToday();
     const [teamList, setTeamList] = useState<Team[]>([]);
     const [numVisibleColumns, setNumVisibleColumns] = useState<number>(4);
     const screenWidth = useScreenWidth();

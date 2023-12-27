@@ -1,4 +1,4 @@
-import React, {DataGrid, GridColDef, GridFilterModel} from '@mui/x-data-grid';
+import React, {DataGrid, GridColDef} from '@mui/x-data-grid';
 import {
     useIsSmallScreen,
     useScreenHeight,
@@ -49,27 +49,29 @@ type Player = {
 
 export default function PlayerTable() {
     const [playerList, setPlayerList] = useState<Player[]>([]);
-    const today = useToday();
+    const [
+        playersBelongingToSelectedTeams,
+        setPlayersBelongingToSelectedTeams,
+    ] = useState<Player[]>([]);
+    const [today] = useToday();
     const screenWidth = useScreenWidth();
     const isSmallScreen = useIsSmallScreen();
     const screenHeight = useScreenHeight();
-    const [filter, setFilter] = useState<GridFilterModel>({items: []});
     const selectedTeamsModel: SelectedTeamsModel =
         useContext(SelectedTeamsContext);
 
     useEffect(() => {
-        setFilter({
-            items: [
-                {
-                    field: 'teamName',
-                    value: selectedTeamsModel.selectedRows.map(
-                        team => team.abbr
-                    ),
-                    operator: 'isOneOf',
-                },
-            ],
-        });
-    }, [selectedTeamsModel.selectedRows.length]);
+        const abbreviations = new Set(
+            selectedTeamsModel.selectedRows.map(r => r.abbr)
+        );
+        setPlayersBelongingToSelectedTeams(
+            abbreviations.size > 0
+                ? playerList.filter(player =>
+                      abbreviations.has(player.teamName)
+                  )
+                : playerList
+        );
+    }, [playerList, selectedTeamsModel.selectedRows.length]);
 
     useEffect(() => {
         setPlayerList(
@@ -162,7 +164,7 @@ export default function PlayerTable() {
             }}
             disableVirtualization
             autoHeight
-            rows={playerList}
+            rows={playersBelongingToSelectedTeams}
             columns={columns.map(c => {
                 return {
                     ...c,
@@ -179,11 +181,6 @@ export default function PlayerTable() {
                     },
                 },
             }}
-            onFilterModelChange={newFilterModel => {
-                setFilter(newFilterModel);
-            }}
-            filterModel={filter}
-            className="playerTable"
         />
     );
 }
