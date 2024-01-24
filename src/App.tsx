@@ -1,7 +1,7 @@
 import React, {Fragment, useContext, useState} from 'react';
 import './App.css';
 import PlayerTable from './components/PlayerTable';
-import {Button, Drawer, Tab, Tabs} from '@mui/material';
+import {Tab, Tabs} from '@mui/material';
 import TeamTable from './components/TeamTable';
 import {
     SelectedTeamsContext,
@@ -9,29 +9,12 @@ import {
 } from './contexts/SelectedTeamsContext';
 
 function App() {
-    const [drawerOpen, setDrawerOpen] = useState(false);
     const [tabValue, setTabValue] = useState(0);
     const selectedTeamsModel: SelectedTeamsModel =
         useContext(SelectedTeamsContext);
 
-    function settingsMenu() {
-        return (
-            <Drawer
-                anchor={'left'}
-                open={drawerOpen}
-                onClose={() => setDrawerOpen(false)}
-            >
-                settings maybe??
-            </Drawer>
-        );
-    }
-
     function tableElement() {
         return (
-            // <Fragment>
-            //     {tabValue === 1 && <PlayerTable />}{' '}
-            //     {tabValue === 0 && <TeamTable />}
-            // </Fragment>
             <Fragment>
                 <div hidden={tabValue !== 1} style={{height: 'fit-content'}}>
                     {<PlayerTable />}
@@ -65,17 +48,6 @@ function App() {
         <div className="App">
             <SelectedTeamsContext.Provider value={selectedTeamsModel}>
                 {tabGroup()}
-                {settingsMenu()}
-                {
-                    <Button
-                        variant="text"
-                        onClick={() => {
-                            setDrawerOpen(true);
-                        }}
-                    >
-                        Settings
-                    </Button>
-                }
             </SelectedTeamsContext.Provider>
         </div>
     );
