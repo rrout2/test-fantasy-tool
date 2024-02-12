@@ -1,0 +1,26 @@
+.playerCard {
+    background-color:aquamarine;
+    width: 180px;
+    margin-bottom: 5px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-radius: 5px;
+}
+
+.ranker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.toolbar {
+    display: flex;
+    flex-direction: row;
+}
