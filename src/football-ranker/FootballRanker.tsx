@@ -7,6 +7,7 @@ import React, {
 import nflPlayersJson from './nfl_players.json';
 import './FootballRanker.css';
 import {Button} from '@mui/material';
+import {MuiFileInput} from 'mui-file-input';
 
 type PlayerJson = {
     full_name: string;
@@ -22,6 +23,7 @@ const FANTASY_POSITIONS = new Set(['QB', 'RB', 'WR', 'TE']);
 export default function FootballRanker() {
     const [rankings, setRankings] = useState<PlayerJson[]>([]);
     const [players, setPlayers] = useState<Map<number, PlayerJson>>(new Map());
+    const [file, setFile] = React.useState<File>();
 
     useEffect(() => {
         loadPlayers();
@@ -61,27 +63,35 @@ export default function FootballRanker() {
         return <Button onClick={downloadRankings}>Download</Button>;
     }
 
-    function uploadRankings(e: ChangeEvent<HTMLInputElement>) {
-        if (!e.target.files) return;
+    function uploadRankings(value: File | null) {
+        if (!value) return;
+
+        setFile(value);
         const fileReader = new FileReader();
-        fileReader.readAsText(e.target.files[0], 'UTF-8');
+        fileReader.readAsText(value, 'UTF-8');
         fileReader.onload = e => {
             if (!e.target) return;
             const raw = JSON.parse(e.target.result as string) as number[];
-            console.log(raw);
             setRankings(
                 raw.map(playerId => {
                     return players.get(playerId)!;
                 })
             );
-            // console.log('e.target.result', e.target.result);
-            // setFiles(e.target.result);
         };
     }
 
     function uploadButton() {
-        return <input type="file" onChange={uploadRankings} />;
-        // return <Button onClick={uploadRankings}>Upload</Button>;
+        return (
+            <MuiFileInput
+                className="uploadButton"
+                value={file}
+                onChange={uploadRankings}
+                inputProps={{accept: 'application/json'}}
+                getInputText={(f: File | null) => {
+                    return f ? 'Uploaded' : 'Upload';
+                }}
+            />
+        );
     }
 
     function playerCard(p: PlayerJson) {
