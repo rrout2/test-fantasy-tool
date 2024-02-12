@@ -68,8 +68,13 @@ export default function FootballRanker() {
         fileReader.onload = e => {
             if (!e.target) return;
             const raw = JSON.parse(e.target.result as string) as number[];
-            // setRankings();
-            console.log('e.target.result', e.target.result);
+            console.log(raw);
+            setRankings(
+                raw.map(playerId => {
+                    return players.get(playerId)!;
+                })
+            );
+            // console.log('e.target.result', e.target.result);
             // setFiles(e.target.result);
         };
     }
