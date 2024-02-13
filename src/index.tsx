@@ -16,7 +16,7 @@ root.render(
                 <Route path="/test-fantasy-tool" element={<App />}></Route>
                 <Route path="/" element={<App />}></Route>
                 <Route
-                    path="/football-ranker"
+                    path="/test-fantasy-tool/football-ranker"
                     element={<FootballRanker />}
                 ></Route>
             </Routes>
