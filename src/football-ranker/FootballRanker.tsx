@@ -113,40 +113,31 @@ export default function FootballRanker() {
         );
     }
 
-    function playerCard(p: PlayerJson) {
-        return (
-            <div key={p.player_id} className="playerCard">
-                <div>{p.full_name}</div>
-                <div>{`${p.position}`}</div>
-                <div>{`Year ${p.years_exp + 1}`}</div>
-            </div>
-        );
-    }
-
     function rankingComponent() {
-        const table = useMaterialReactTable({
-            autoResetPageIndex: false,
-            columns,
-            data: rankings,
-            enableRowOrdering: true,
-            enableSorting: false,
-            muiRowDragHandleProps: ({table}) => ({
-                onDragEnd: () => {
-                    const {draggingRow, hoveredRow} = table.getState();
-                    if (hoveredRow && draggingRow) {
-                        rankings.splice(
-                            (hoveredRow as MRT_Row<PlayerJson>).index,
-                            0,
-                            rankings.splice(draggingRow.index, 1)[0]
-                        );
-                        setRankings([...rankings]);
-                    }
-                },
-            }),
-        });
-        return <MaterialReactTable table={table} />;
-
-        // return rankings.map(playerCard);
+        return (
+            <MaterialReactTable
+                table={useMaterialReactTable({
+                    autoResetPageIndex: false,
+                    columns,
+                    data: rankings,
+                    enableRowOrdering: true,
+                    enableSorting: false,
+                    muiRowDragHandleProps: ({table}) => ({
+                        onDragEnd: () => {
+                            const {draggingRow, hoveredRow} = table.getState();
+                            if (hoveredRow && draggingRow) {
+                                rankings.splice(
+                                    (hoveredRow as MRT_Row<PlayerJson>).index,
+                                    0,
+                                    rankings.splice(draggingRow.index, 1)[0]
+                                );
+                                setRankings([...rankings]);
+                            }
+                        },
+                    }),
+                })}
+            />
+        );
     }
 
     return (
