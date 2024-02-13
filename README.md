@@ -1,6 +1,7 @@
-# Fantasy Basketball Tool
+# Fantasy Tools
 
-[Live URL](https://rrout2.github.io/test-fantasy-tool/)
+[FBB Scheduling Tool](https://rrout2.github.io/test-fantasy-tool/)
+[FF Ranker](https://rrout2.github.io/test-fantasy-tool/#football-ranker)
 
 ## Local Development
 ### Prerequisites
