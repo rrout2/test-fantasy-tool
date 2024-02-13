@@ -10,8 +10,8 @@
 
 .ranker {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    align-items: top;
 }
 
 .body {
@@ -23,6 +23,7 @@
 .toolbar {
     display: flex;
     flex-direction: row;
+    margin: 4px;
 }
 
 .uploadButton {
