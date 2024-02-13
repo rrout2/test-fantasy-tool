@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
+import {HashRouter, Routes, Route} from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
@@ -11,16 +11,15 @@ const root = ReactDOM.createRoot(
 );
 root.render(
     <React.StrictMode>
-        <BrowserRouter>
+        <HashRouter basename="/test-fantasy-tool">
             <Routes>
-                <Route path="/test-fantasy-tool" element={<App />}></Route>
                 <Route path="/" element={<App />}></Route>
                 <Route
-                    path="/test-fantasy-tool/football-ranker"
+                    path="football-ranker"
                     element={<FootballRanker />}
                 ></Route>
             </Routes>
-        </BrowserRouter>
+        </HashRouter>
     </React.StrictMode>
 );
 
