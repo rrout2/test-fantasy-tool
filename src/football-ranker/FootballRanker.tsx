@@ -1,13 +1,13 @@
-import React, {
-    ChangeEvent,
-    ChangeEventHandler,
-    useEffect,
-    useState,
-} from 'react';
+import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
 import nflPlayersJson from './nfl_players.json';
 import './FootballRanker.css';
 import {Button} from '@mui/material';
-import {MuiFileInput} from 'mui-file-input';
+import {
+    MRT_ColumnDef,
+    MRT_Row,
+    MaterialReactTable,
+    useMaterialReactTable,
+} from 'material-react-table';
 
 type PlayerJson = {
     full_name: string;
@@ -23,7 +23,27 @@ const FANTASY_POSITIONS = new Set(['QB', 'RB', 'WR', 'TE']);
 export default function FootballRanker() {
     const [rankings, setRankings] = useState<PlayerJson[]>([]);
     const [players, setPlayers] = useState<Map<number, PlayerJson>>(new Map());
-    const [file, setFile] = React.useState<File>();
+
+    const columns = useMemo<MRT_ColumnDef<PlayerJson>[]>(
+        () => [
+            {
+                accessorFn: row => row.full_name,
+                id: 'name',
+                header: 'Name',
+            },
+            {
+                accessorFn: row => row.position,
+                id: 'pos',
+                header: 'Position',
+            },
+            {
+                accessorFn: row => row.years_exp,
+                id: 'years',
+                header: 'Years Experience',
+            },
+        ],
+        []
+    );
 
     useEffect(() => {
         loadPlayers();
@@ -63,12 +83,11 @@ export default function FootballRanker() {
         return <Button onClick={downloadRankings}>Download</Button>;
     }
 
-    function uploadRankings(value: File | null) {
-        if (!value) return;
+    function uploadRankings(e: ChangeEvent<HTMLInputElement>) {
+        if (!e.target.files) return;
 
-        setFile(value);
         const fileReader = new FileReader();
-        fileReader.readAsText(value, 'UTF-8');
+        fileReader.readAsText(e.target.files[0], 'UTF-8');
         fileReader.onload = e => {
             if (!e.target) return;
             const raw = JSON.parse(e.target.result as string) as number[];
@@ -82,15 +101,15 @@ export default function FootballRanker() {
 
     function uploadButton() {
         return (
-            <MuiFileInput
-                className="uploadButton"
-                value={file}
-                onChange={uploadRankings}
-                inputProps={{accept: 'application/json'}}
-                getInputText={(f: File | null) => {
-                    return f ? 'Uploaded' : 'Upload';
-                }}
-            />
+            <Button component="label">
+                Upload
+                <input
+                    type="file"
+                    hidden
+                    onChange={uploadRankings}
+                    accept="application/json"
+                />
+            </Button>
         );
     }
 
@@ -105,7 +124,29 @@ export default function FootballRanker() {
     }
 
     function rankingComponent() {
-        return rankings.map(playerCard);
+        const table = useMaterialReactTable({
+            autoResetPageIndex: false,
+            columns,
+            data: rankings,
+            enableRowOrdering: true,
+            enableSorting: false,
+            muiRowDragHandleProps: ({table}) => ({
+                onDragEnd: () => {
+                    const {draggingRow, hoveredRow} = table.getState();
+                    if (hoveredRow && draggingRow) {
+                        rankings.splice(
+                            (hoveredRow as MRT_Row<PlayerJson>).index,
+                            0,
+                            rankings.splice(draggingRow.index, 1)[0]
+                        );
+                        setRankings([...rankings]);
+                    }
+                },
+            }),
+        });
+        return <MaterialReactTable table={table} />;
+
+        // return rankings.map(playerCard);
     }
 
     return (
