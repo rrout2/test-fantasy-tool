@@ -29,7 +29,7 @@
   },
   "scripts": {
     "predeploy": "rimraf node_modules/.cache/gh-pages && npm run build",
-    "deploy": "HASH=$(git log -1 --pretty=\"%h\") && gh-pages -d build -- $HASH",
+    "deploy": "MSG=$(git log -1 --pretty=\"%s\") && echo $HASH && gh-pages -d build -m $MSG",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
