@@ -11,6 +11,7 @@ import {
 import {
     MRT_ColumnDef,
     MRT_Row,
+    MRT_TableOptions,
     MaterialReactTable,
     useMaterialReactTable,
 } from 'material-react-table';
@@ -73,142 +74,106 @@ export default function FootballRanker() {
         loadPlayers();
     }, []);
 
-    const rankingTable = useMaterialReactTable({
-        autoResetPageIndex: false,
-        columns,
-        data: rankings,
-        enableRowOrdering: true,
-        enableSorting: false,
-        renderTopToolbarCustomActions: () => (
-            <Typography variant="h5">Rankings</Typography>
-        ),
-        onDraggingRowChange: setDraggingRow,
-        state: {draggingRow},
-        muiRowDragHandleProps: ({table}) => ({
-            onDragStart: () => {
-                setHoveredTable(Table.Rankings);
-            },
-            onDragEnd: () => {
-                // if dragging FROM rankings TO remaining players
-                if (hoveredTable === Table.RemainingPlayers) {
-                    if (draggingRow) {
-                        rankings.splice(draggingRow.index, 1);
-                        setRankings([...rankings]);
-                        const rowToBeInserted = draggingRow.original;
+    const rankingTable = useMaterialReactTable(getTableOptions(Table.Rankings));
 
-                        if (!hoveredRow) {
-                            setRemainingPlayers(remainingPlayers =>
-                                remainingPlayers.length === 0
-                                    ? [rowToBeInserted]
-                                    : [...remainingPlayers, rowToBeInserted]
-                            );
-                        } else {
-                            remainingPlayers.splice(
-                                hoveredRow.index,
+    function getTableOptions(
+        tableType: Table.Rankings | Table.RemainingPlayers
+    ): MRT_TableOptions<PlayerJson> {
+        const crossTable = tableType !== hoveredTable;
+        return {
+            autoResetPageIndex: false,
+            columns,
+            data: tableType === Table.Rankings ? rankings : remainingPlayers,
+            enableRowOrdering: true,
+            enableSorting: tableType === Table.RemainingPlayers,
+            renderTopToolbarCustomActions: () => (
+                <Typography variant="h5">
+                    {tableType === Table.Rankings
+                        ? 'Rankings'
+                        : 'Remaining Players'}
+                </Typography>
+            ),
+            onDraggingRowChange: setDraggingRow,
+            state: {draggingRow},
+            muiRowDragHandleProps: ({table}) => ({
+                onDragStart: () => {
+                    setHoveredTable(Table.Rankings);
+                },
+                onDragEnd: () => {
+                    const startTable = tableType;
+                    const sourceData =
+                        startTable === Table.Rankings
+                            ? rankings
+                            : remainingPlayers;
+                    const setSourceData =
+                        startTable === Table.Rankings
+                            ? setRankings
+                            : setRemainingPlayers;
+
+                    if (crossTable) {
+                        const endTable = hoveredTable;
+                        const endData =
+                            endTable === Table.Rankings
+                                ? rankings
+                                : remainingPlayers;
+                        const setEndData =
+                            endTable === Table.Rankings
+                                ? setRankings
+                                : setRemainingPlayers;
+
+                        if (draggingRow) {
+                            sourceData.splice(draggingRow.index, 1);
+                            setSourceData([...sourceData]);
+                            const rowToBeInserted = draggingRow.original;
+
+                            if (!hoveredRow) {
+                                setEndData(endData =>
+                                    endData.length === 0
+                                        ? [rowToBeInserted]
+                                        : [...endData, rowToBeInserted]
+                                );
+                            } else {
+                                endData.splice(
+                                    hoveredRow.index,
+                                    0,
+                                    rowToBeInserted
+                                );
+                                setEndData([...endData]);
+                            }
+                        }
+                    } else {
+                        // dragging within table
+                        const {draggingRow, hoveredRow} = table.getState();
+                        if (hoveredRow && draggingRow) {
+                            sourceData.splice(
+                                (hoveredRow as MRT_Row<PlayerJson>).index,
                                 0,
-                                rowToBeInserted
+                                sourceData.splice(draggingRow.index, 1)[0]
                             );
-                            setRemainingPlayers([...remainingPlayers]);
+                            setSourceData([...sourceData]);
                         }
                     }
-                } else if (hoveredTable === Table.Rankings) {
-                    // dragging within rankings table
-                    const {draggingRow, hoveredRow} = table.getState();
-                    if (hoveredRow && draggingRow) {
-                        rankings.splice(
-                            (hoveredRow as MRT_Row<PlayerJson>).index,
-                            0,
-                            rankings.splice(draggingRow.index, 1)[0]
-                        );
-                        setRankings([...rankings]);
-                    }
-                }
 
-                setHoveredTable(Table.None);
-            },
-        }),
-        muiTablePaperProps: ({table}) => ({
-            onDragEnter: () => {
-                setHoveredTable(Table.Rankings);
-                const {hoveredRow} = table.getState();
-                setHoveredRow(hoveredRow as MRT_Row<PlayerJson>);
-            },
-            sx: {
-                outline:
-                    hoveredTable === Table.Rankings
-                        ? '2px dashed pink'
-                        : undefined,
-            },
-        }),
-    });
+                    setHoveredTable(Table.None);
+                    setHoveredRow(null);
+                },
+            }),
+            muiTablePaperProps: ({table}) => ({
+                onDragEnter: () => {
+                    setHoveredTable(tableType);
+                    const {hoveredRow} = table.getState();
+                    setHoveredRow(hoveredRow as MRT_Row<PlayerJson>);
+                },
+                sx: {
+                    outline: !crossTable ? '2px dashed pink' : undefined,
+                },
+            }),
+        };
+    }
 
-    const remainingPlayersTable = useMaterialReactTable({
-        autoResetPageIndex: false,
-        columns,
-        data: remainingPlayers,
-        enableRowOrdering: true,
-        enableSorting: true,
-        renderTopToolbarCustomActions: () => (
-            <Typography variant="h5">Remaining Players</Typography>
-        ),
-        onDraggingRowChange: setDraggingRow,
-        state: {draggingRow},
-        muiRowDragHandleProps: ({table}) => ({
-            onDragStart: () => {
-                setHoveredTable(Table.RemainingPlayers);
-            },
-            onDragEnd: () => {
-                // if dragging FROM remaining players TO rankings
-                if (hoveredTable === Table.Rankings) {
-                    if (draggingRow) {
-                        remainingPlayers.splice(draggingRow.index, 1);
-                        setRemainingPlayers([...remainingPlayers]);
-                        const rowToBeInserted = draggingRow.original;
-
-                        if (!hoveredRow) {
-                            setRankings(rankings =>
-                                rankings.length === 0
-                                    ? [rowToBeInserted]
-                                    : [...rankings, rowToBeInserted]
-                            );
-                        } else {
-                            rankings.splice(
-                                hoveredRow.index,
-                                0,
-                                rowToBeInserted
-                            );
-                            setRankings([...rankings]);
-                        }
-                    }
-                } else if (hoveredTable === Table.RemainingPlayers) {
-                    const {draggingRow, hoveredRow} = table.getState();
-                    if (hoveredRow && draggingRow) {
-                        remainingPlayers.splice(
-                            (hoveredRow as MRT_Row<PlayerJson>).index,
-                            0,
-                            remainingPlayers.splice(draggingRow.index, 1)[0]
-                        );
-                        setRemainingPlayers([...remainingPlayers]);
-                    }
-                }
-
-                setHoveredTable(Table.None);
-            },
-        }),
-        muiTablePaperProps: ({table}) => ({
-            onDragEnter: () => {
-                setHoveredTable(Table.RemainingPlayers);
-                const {hoveredRow} = table.getState();
-                setHoveredRow(hoveredRow as MRT_Row<PlayerJson>);
-            },
-            sx: {
-                outline:
-                    hoveredTable === Table.RemainingPlayers
-                        ? '2px dashed pink'
-                        : undefined,
-            },
-        }),
-    });
+    const remainingPlayersTable = useMaterialReactTable(
+        getTableOptions(Table.RemainingPlayers)
+    );
 
     function loadPlayers() {
         const nflPlayers = Object.entries(nflPlayersJson);
