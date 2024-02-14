@@ -95,6 +95,18 @@ export default function FootballRanker() {
             ),
             onDraggingRowChange: setDraggingRow,
             state: {draggingRow},
+            muiTableBodyRowProps: () => ({
+                onClick: e => {
+                    // console.log(e.currentTarget.rowIndex);
+                    moveRowOver(
+                        tableType,
+                        tableType === Table.Rankings
+                            ? Table.RemainingPlayers
+                            : Table.Rankings,
+                        e.currentTarget.rowIndex - 1
+                    );
+                },
+            }),
             muiRowDragHandleProps: ({table}) => ({
                 onDragStart: () => {
                     setHoveredTable(Table.Rankings);
@@ -112,35 +124,7 @@ export default function FootballRanker() {
 
                     if (crossTable) {
                         const endTable = hoveredTable;
-                        const endData =
-                            endTable === Table.Rankings
-                                ? rankings
-                                : remainingPlayers;
-                        const setEndData =
-                            endTable === Table.Rankings
-                                ? setRankings
-                                : setRemainingPlayers;
-
-                        if (draggingRow) {
-                            sourceData.splice(draggingRow.index, 1);
-                            setSourceData([...sourceData]);
-                            const rowToBeInserted = draggingRow.original;
-
-                            if (!hoveredRow) {
-                                setEndData(endData =>
-                                    endData.length === 0
-                                        ? [rowToBeInserted]
-                                        : [...endData, rowToBeInserted]
-                                );
-                            } else {
-                                endData.splice(
-                                    hoveredRow.index,
-                                    0,
-                                    rowToBeInserted
-                                );
-                                setEndData([...endData]);
-                            }
-                        }
+                        moveRowOver(startTable, endTable);
                     } else {
                         // dragging within table
                         const {draggingRow, hoveredRow} = table.getState();
@@ -174,6 +158,44 @@ export default function FootballRanker() {
     const remainingPlayersTable = useMaterialReactTable(
         getTableOptions(Table.RemainingPlayers)
     );
+
+    function moveRowOver(
+        startTable: Table,
+        endTable: Table,
+        rowIndex?: number
+    ) {
+        const sourceData =
+            startTable === Table.Rankings ? rankings : remainingPlayers;
+        const setSourceData =
+            startTable === Table.Rankings ? setRankings : setRemainingPlayers;
+
+        const endData =
+            endTable === Table.Rankings ? rankings : remainingPlayers;
+        const setEndData =
+            endTable === Table.Rankings ? setRankings : setRemainingPlayers;
+
+        let rowToBeInserted: PlayerJson;
+        if (rowIndex) {
+            rowToBeInserted = sourceData.splice(rowIndex, 1)[0];
+            setSourceData([...sourceData]);
+        } else if (draggingRow) {
+            sourceData.splice(draggingRow.index, 1);
+            setSourceData([...sourceData]);
+            rowToBeInserted = draggingRow.original;
+        } else {
+            throw new Error('no row found to move');
+        }
+        if (!hoveredRow) {
+            setEndData(endData =>
+                endData.length === 0
+                    ? [rowToBeInserted]
+                    : [...endData, rowToBeInserted]
+            );
+        } else {
+            endData.splice(hoveredRow.index, 0, rowToBeInserted);
+            setEndData([...endData]);
+        }
+    }
 
     function loadPlayers() {
         const nflPlayers = Object.entries(nflPlayersJson);
