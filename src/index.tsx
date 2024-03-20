@@ -4,7 +4,8 @@ import {HashRouter, Routes, Route} from 'react-router-dom';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import FootballRanker from './football-ranker/FootballRanker';
+import FootballRanker from './football-ranker/components/ranker/FootballRanker';
+import Drafter from './football-ranker/components/drafter/Drafter';
 
 const root = ReactDOM.createRoot(
     document.getElementById('root') as HTMLElement
@@ -18,6 +19,7 @@ root.render(
                     path="/football-ranker"
                     element={<FootballRanker />}
                 ></Route>
+                <Route path="/drafter" element={<Drafter />} />
             </Routes>
         </HashRouter>
     </React.StrictMode>

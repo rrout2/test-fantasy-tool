@@ -1,5 +1,5 @@
 import React, {ChangeEvent, useEffect, useMemo, useState} from 'react';
-import nflPlayersJson from './nfl_players.json';
+import nflPlayersJson from '../../nfl_players.json';
 import './FootballRanker.css';
 import {
     Button,
@@ -15,8 +15,10 @@ import {
     MaterialReactTable,
     useMaterialReactTable,
 } from 'material-react-table';
+import {useNavigate} from 'react-router-dom';
+import Drafter from '../drafter/Drafter';
 
-type PlayerJson = {
+export type PlayerJson = {
     full_name: string;
     player_id: number;
     position: string;
@@ -46,6 +48,7 @@ export default function FootballRanker() {
         null
     );
     const [hoveredTable, setHoveredTable] = useState<Table>(Table.None);
+    const [isDrafting, setIsDrafting] = useState(false);
     const columns = useMemo<MRT_ColumnDef<PlayerJson>[]>(
         () => [
             {
@@ -254,6 +257,18 @@ export default function FootballRanker() {
         return <Button onClick={startNewRankings}>Start New</Button>;
     }
 
+    function draftNowButton() {
+        return (
+            <Button
+                onClick={() => {
+                    setIsDrafting(!isDrafting);
+                }}
+            >
+                Draft
+            </Button>
+        );
+    }
+
     function remainingPlayersToggle() {
         return (
             <FormGroup>
@@ -286,12 +301,17 @@ export default function FootballRanker() {
                 {downloadButton()}
                 {uploadButton()}
                 {startNewButton()}
+                {draftNowButton()}
                 {remainingPlayersToggle()}
             </div>
-            <div className="ranker">
-                {rankingComponent()}
-                {displayRemainingPlayersTable && remainingPlayersComponent()}
-            </div>
+            {!isDrafting && (
+                <div className="ranker">
+                    {rankingComponent()}
+                    {displayRemainingPlayersTable &&
+                        remainingPlayersComponent()}
+                </div>
+            )}
+            {isDrafting && <Drafter />}
         </div>
     );
 }
